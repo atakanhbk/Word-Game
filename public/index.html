@@ -326,7 +326,7 @@
                 },
               },
             });
-            console.log(ball);
+        
             getLetterIndex++;
             balls.push(ball);
             World.add(engine.world, ball);
@@ -501,19 +501,19 @@
         }
 
         function TutorialModeClick(ball) {
-          switch (ball.label) {
-            case "W":
-              handleTutorialStep("O", ball);
-              break;
-            case "O":
-              handleTutorialStep("R", ball);
-              break;
-            case "R":
-              handleTutorialStep("K", ball);
-              break;
-            case "K":
-              handleTutorialStep("", ball);
-              break;
+        
+
+          if(ball.label === "W" && tutorialLetterIndex === 0){
+            handleTutorialStep("O", ball);
+          }
+          else if(ball.label === "O" && tutorialLetterIndex === 1){
+            handleTutorialStep("R", ball);
+          }
+          else if(ball.label === "R" && tutorialLetterIndex === 2){
+            handleTutorialStep("K", ball);
+          }
+          else if(ball.label === "K" && tutorialLetterIndex === 3){
+            handleTutorialStep("", ball);
           }
         }
 
@@ -532,6 +532,7 @@
         }
 
         function handleTutorialStep(nextLetter, ball) {
+          
           if (tutorialLetterIndex === getNextIndex()) {
             gameElements.tutorialTitle.style.transform = "translate(-450px)";
             gameElements.wrongAnswer.style.display = "block";
@@ -541,6 +542,7 @@
             checkElementHasAlreadyInclude(ball);
             checkWordIsCorrect();
             CreateHandTutorial(nextLetter);
+           
           }
 
           if(nextLetter === ""){
@@ -629,16 +631,18 @@
 
         function checkElementHasAlreadyInclude(ball) {
           if (destroyBalls.includes(ball)) {
-            ChangeColorOfLetter(ball, "#c66f4f");
-            let index = gameElements.answerTitle.textContent.indexOf(
-              ball.label
-            );
-            ChangeColorOfBall(ball, "assets/new-bubble-white.png");
-
-            gameElements.answerTitle.textContent =
-              gameElements.answerTitle.textContent.slice(0, index) +
-              gameElements.answerTitle.textContent.slice(index + 1);
-            destroyBalls.splice(index, 1);
+            if (isTutorialEnd) {
+              ChangeColorOfLetter(ball, "#c66f4f");
+              let index = gameElements.answerTitle.textContent.indexOf(
+                ball.label
+              );
+              ChangeColorOfBall(ball, "assets/new-bubble-white.png");
+  
+              gameElements.answerTitle.textContent =
+                gameElements.answerTitle.textContent.slice(0, index) +
+                gameElements.answerTitle.textContent.slice(index + 1);
+              destroyBalls.splice(index, 1);
+            }
           } else {
             if (gameElements.answerTitle.textContent.length < 4) {
               destroyBalls.push(ball);
