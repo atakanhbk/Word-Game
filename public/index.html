@@ -338,6 +338,8 @@
           if (ballLabel !== "" && !isTutorialEnd) {
             setTimeout(() => {
               const ball = balls.find((element) => element.label === ballLabel);
+              ChangeColorOfLetter(ball, "white");
+              ball.render.sprite.texture = "assets/newCircle.png";
               const handImage = document.createElement("img");
               handImage.className = "hand-image";
               handImage.src = "assets/hand.png";
