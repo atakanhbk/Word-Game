@@ -339,7 +339,8 @@
             setTimeout(() => {
               const ball = balls.find((element) => element.label === ballLabel);
               ChangeColorOfLetter(ball, "white");
-              ball.render.sprite.texture = "assets/newCircle.png";
+              ChangeColorOfBall(ball, "assets/newCircle.png");
+              
               const handImage = document.createElement("img");
               handImage.className = "hand-image";
               handImage.src = "assets/hand.png";
@@ -535,6 +536,10 @@
           }
         }
 
+        function ChangeColorOfBall(ball, texture) {
+          ball.render.sprite.texture = texture;
+        }
+
         function hiddenAnswerTitle() {
           setTimeout(() => {
             gameElements.answerPart.className = "make-visible-answer-part";
@@ -600,7 +605,8 @@
             let index = gameElements.answerTitle.textContent.indexOf(
               ball.label
             );
-            ball.render.sprite.texture = "assets/new-bubble-white.png";
+            ChangeColorOfBall(ball, "assets/new-bubble-white.png");
+       
             gameElements.answerTitle.textContent =
               gameElements.answerTitle.textContent.slice(0, index) +
               gameElements.answerTitle.textContent.slice(index + 1);
@@ -610,7 +616,8 @@
               destroyBalls.push(ball);
               ChangeColorOfLetter(ball, "white");
               gameElements.answerTitle.textContent += `${ball.label}`;
-              ball.render.sprite.texture = "assets/newCircle.png";
+              ChangeColorOfBall(ball, "assets/newCircle.png");
+             
             }
           }
         }
