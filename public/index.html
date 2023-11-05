@@ -164,6 +164,22 @@
         z-index: 9;
         pointer-events: none;
       }
+
+      .tutorial-title {
+        position: absolute;
+        border: 1px solid #744724;
+        border-radius: 40px;
+        padding: 20px;
+        margin-top: 20px;
+        background-color: #744724;
+        color: white;
+        font-family: "Sniglet-Regular", sans-serif;
+        font-weight: bold;
+        font-size: 15px;
+        display: none;
+        transform: translate(0);
+        transition: transform 0.5s ease;
+      }
     </style>
   </head>
   <body>
@@ -171,6 +187,7 @@
     <img id="ball-image" src="assets/circle.png" style="display: none" />
     <div id="game-container">
       <img id="logo" src="./assets/core/logo_white.png" alt="loading" />
+      <div class="tutorial-title">LETTERS DON'T HAVE TO BE TOUCHING</div>
       <div class="answer-part">
         <img class="ground-image" src="assets/orange-pane.png" />
         <div class="answer-title"></div>
@@ -202,6 +219,7 @@
             this.cancelButton = document.querySelector(".cancel-button");
             this.groundImage = document.querySelector(".ground-image");
             this.nextLevelButton = document.querySelector(".next-level-button");
+            this.tutorialTitle = document.querySelector(".tutorial-title");
           }
         }
 
@@ -337,10 +355,11 @@
 
           if (ballLabel !== "" && !isTutorialEnd) {
             setTimeout(() => {
+              gameElements.tutorialTitle.style.display = "block";
               const ball = balls.find((element) => element.label === ballLabel);
               ChangeColorOfLetter(ball, "white");
               ChangeColorOfBall(ball, "assets/newCircle.png");
-              
+
               const handImage = document.createElement("img");
               handImage.className = "hand-image";
               handImage.src = "assets/hand.png";
@@ -514,6 +533,7 @@
 
         function handleTutorialStep(nextLetter, ball) {
           if (tutorialLetterIndex === getNextIndex()) {
+            gameElements.tutorialTitle.style.transform = "translate(-450px)";
             gameElements.wrongAnswer.style.display = "block";
             gameElements.correctAnswer.style.display = "none";
             gameElements.groundImage.src = "assets/gray-pane.png";
@@ -521,6 +541,13 @@
             checkElementHasAlreadyInclude(ball);
             checkWordIsCorrect();
             CreateHandTutorial(nextLetter);
+          }
+
+          if(nextLetter === ""){
+            gameElements.tutorialTitle.style.right = "-800px";
+            gameElements.tutorialTitle.style.transform = "translate(-890px)";
+            gameElements.tutorialTitle.textContent = "TAP THE GREEN BOX TO CONFIRM";
+           
           }
         }
 
@@ -579,6 +606,7 @@
         function handleNextLevelClick() {
           if (!isTutorialEnd) {
             isTutorialEnd = true;
+            gameElements.tutorialTitle.style.display = "none";
             console.log(isTutorialEnd);
           }
           if (!gameFinish) {
@@ -606,7 +634,7 @@
               ball.label
             );
             ChangeColorOfBall(ball, "assets/new-bubble-white.png");
-       
+
             gameElements.answerTitle.textContent =
               gameElements.answerTitle.textContent.slice(0, index) +
               gameElements.answerTitle.textContent.slice(index + 1);
@@ -617,7 +645,6 @@
               ChangeColorOfLetter(ball, "white");
               gameElements.answerTitle.textContent += `${ball.label}`;
               ChangeColorOfBall(ball, "assets/newCircle.png");
-             
             }
           }
         }
