@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Ball Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <style>
+      body,
+      html {
+        margin: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        overflow: hidden;
+      }
+      body {
+        background: #1e1e37;
+      }
+      canvas {
+        background-color: #f19648 !important;
+      }
+      #logo {
+        width: 100%;
+        max-width: 150px;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+      }
+      #bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: url("./assets/core/pattern.png") repeat center center fixed;
+      }
+      #game-container {
+        width: 500px;
+        height: 400px;
+        border: 1px solid #f19648;
+        background-color: #f19648;
+        display: flex;
+        justify-content: center;
+      }
+      .answer-part {
+        width: 470px;
+        height: 60px;
+        position: absolute;
+        color: white;
+        font-weight: bold;
+        transform: translate(0px, 300px);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        display: flex;
+        font-size: 50px;
+        letter-spacing: 20px;
+      }
+      .answer-result-part {
+        position: absolute;
+        right: 0px;
+        font-size: 30px;
+      }
+      .correct-answer {
+        display: none;
+      }
+      .wrong-answer {
+        display: none;
+      }
+      .answer-result-part {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 10px;
+      }
+      .ball-image {
+        width: 50px; /* Set the desired width */
+        height: 50px; /* Set the desired height */
+      }
+      img {
+        width: 30px;
+      }
+      .ball-image {
+        width: 30px; /* Set the desired width */
+        height: 30px; /* Set the desired height */
+      }
+      .ground-image {
+        width: 100%;
+        height: 100%;
+        right: 0px;
+        position: absolute;
+        z-index: -1;
+      }
+      button {
+        border: 0px;
+        background: none;
+      }
+      img {
+        z-index: -1;
+      }
+      @font-face {
+        font-family: "Sniglet-Regular";
+        src: url("fonts/Sniglet-Regular.woff2") format("woff2"),
+          /* WOFF2 format */ url("fonts/Sniglet-Regular.woff") format("woff"); /* WOFF format */
+        /* Add additional formats if available */
+      }
+      .ballLetter {
+        position: absolute;
+        color: #c66f4f;
+        height: 50px;
+        width: 50px;
+        cursor: move;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Sniglet-Regular", sans-serif;
+        border-radius: 50%;
+      }
+
+      .answer-title {
+        font-family: "Sniglet-Regular", sans-serif;
+      }
+      #ground {
+        position: absolute;
+        background: #666;
+        top: 440px;
+        height: 120px;
+        width: 400px;
+      }
+      html,
+      body {
+        position: relative;
+        height: 100%;
+        margin: 0;
+      }
+      .make-visible-answer-part {
+        width: 475px;
+        height: 60px;
+        position: absolute;
+        color: white;
+        font-weight: bold;
+        transform: translate(0px, 300px);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        display: flex;
+        font-size: 50px;
+        letter-spacing: 20px;
+        opacity: 0;
+        transition: opacity 1s ease;
+      }
+      .hand-image {
+        position: absolute;
+        z-index: 9;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="bg"></div>
+    <img id="ball-image" src="assets/circle.png" style="display: none" />
+    <div id="game-container">
+      <img id="logo" src="./assets/core/logo_white.png" alt="loading" />
+      <div class="answer-part">
+        <img class="ground-image" src="assets/orange-pane.png" />
+        <div class="answer-title"></div>
+        <div class="answer-result-part">
+          <div class="wrong-answer">
+            <button class="cancel-button">
+              <img src="assets/cross.png" alt="" />
+            </button>
+          </div>
+          <div class="correct-answer">
+            <button class="next-level-button">
+              <img src="assets/tick.png" alt="" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const { Engine, Render, Runner, Bodies, World, Bounds } = Matter;
+
+        class GameElements {
+          constructor() {
+            this.gameContainer = document.getElementById("game-container");
+            this.answerPart = document.querySelector(".answer-part");
+            this.answerTitle = document.querySelector(".answer-title");
+            this.wrongAnswer = document.querySelector(".wrong-answer");
+            this.correctAnswer = document.querySelector(".correct-answer");
+            this.cancelButton = document.querySelector(".cancel-button");
+            this.groundImage = document.querySelector(".ground-image");
+            this.nextLevelButton = document.querySelector(".next-level-button");
+          }
+        }
+
+        let isTutorialEnd = false;
+
+        const gameElements = new GameElements();
+
+        const engine = Engine.create();
+        const render = Render.create({
+          element: gameElements.gameContainer,
+          engine: engine,
+          options: {
+            width: 500,
+            height: 400,
+            wireframes: false,
+          },
+        });
+        const canvas = render.canvas;
+
+        function createRender() {
+          return Render.create({
+            element: gameContainer,
+            engine: engine,
+            options: { width: 500, height: 400, wireframes: false },
+          });
+        }
+
+        Render.run(render);
+        Runner.run(Runner.create(), engine);
+
+        function createGround() {
+          return Bodies.rectangle(250, 340, 500, 80, {
+            isStatic: true,
+            render: { fillStyle: "#F19648" },
+          });
+        }
+
+        const ground = createGround();
+        World.add(engine.world, ground);
+        let balls = [];
+        let destroyBalls = [];
+        let getLetterIndex = 0;
+        const randomLetterList = [];
+
+        function spawnLetterList() {
+          const firstPart = [
+            "W",
+            "B",
+            "O",
+            "S",
+            "R",
+            "F",
+            "G",
+            "H",
+            "J",
+            "Z",
+            "A",
+            "Y",
+            "K",
+          ];
+          const secondPart = ["V", "E", "L", "U", "P", "X"];
+          const thirdPart = [
+            "W",
+            "D",
+            "N",
+            "A",
+            "Q",
+            "R",
+            "A",
+            "N",
+            "Ğ",
+            "O",
+            "S",
+            "K",
+          ];
+
+          // Assign the values to the global variable
+          randomLetterList.push(...firstPart, ...secondPart, ...thirdPart);
+        }
+
+        function ReduceBallShaking() {
+          engine.velocityIterations = 50;
+        }
+        ReduceBallShaking();
+
+        spawnLetterList();
+        let createBallInterval = null;
+
+        function createBall(ballNumber) {
+          let counter = 0;
+          if (createBallInterval !== null) {
+            clearInterval(createBallInterval);
+          }
+          createBallInterval = setInterval(() => {
+            const ball = Bodies.circle(250, 12, 33, {
+              label: randomLetterList[getLetterIndex],
+              render: {
+                fillStyle: "#C96336",
+                text: { content: "A", color: "black", size: 150 },
+                sprite: {
+                  texture: "assets/new-bubble-white.png",
+                  xScale: 1,
+                  yScale: 1,
+                },
+              },
+            });
+            console.log(ball);
+            getLetterIndex++;
+            balls.push(ball);
+            World.add(engine.world, ball);
+            counter++;
+            getLetters(ball);
+
+            if (counter >= ballNumber) {
+              CreateHandTutorial("W");
+              clearInterval(createBallInterval);
+            }
+          }, 300);
+        }
+
+        const handImage = document.createElement("img");
+        handImage.className = "hand-img";
+
+        gameElements.gameContainer.appendChild(handImage);
+
+        function CreateHandTutorial(ballLabel) {
+          const gameContainer = gameElements.gameContainer;
+          const handImage = gameContainer.querySelector(".hand-image");
+
+          if (handImage !== null) {
+            gameElements.gameContainer.removeChild(handImage);
+          }
+
+          if (ballLabel !== "" && !isTutorialEnd) {
+            setTimeout(() => {
+              const ball = balls.find((element) => element.label === ballLabel);
+              const handImage = document.createElement("img");
+              handImage.className = "hand-image";
+              handImage.src = "assets/hand.png";
+              gameElements.gameContainer.appendChild(handImage);
+
+              const handImageMatter = {
+                w: 500,
+                h: 500,
+                body: ball,
+                elem: handImage,
+                scale: 1.0,
+                growing: true,
+                render() {
+                  const { x, y } = this.body.position;
+                  const transformValue = `translate(${x - this.w / 2.25}px, ${
+                    y - this.h / 1000
+                  }px) scale(${this.scale})`;
+                  this.elem.style.transform = transformValue;
+
+                  if (this.growing) {
+                    this.scale += 0.01;
+                    if (this.scale >= 1.5) {
+                      this.growing = false;
+                    }
+                  } else {
+                    this.scale -= 0.01;
+                    if (this.scale <= 1) {
+                      this.growing = true;
+                    }
+                  }
+                },
+              };
+              Matter.Composite.add(engine.world, [handImageMatter.body]);
+
+              function loop() {
+                handImageMatter.render();
+                requestAnimationFrame(loop);
+              }
+              loop();
+              Matter.Composite.remove(engine.world, [handImageMatter.body]);
+            }, 1000);
+          }
+        }
+
+        function StartGame() {
+          createBall(13);
+        }
+        StartGame();
+
+        let getLettersList = [];
+
+        function getLetters(ball) {
+          const h1 = document.createElement("h1");
+          h1.textContent = ball.label;
+          h1.className = "ballLetter";
+          h1.style.pointerEvents = "none";
+          gameElements.gameContainer.appendChild(h1);
+          getLettersList.push(h1);
+          const ballLetter = {
+            w: 500,
+            h: 500,
+            body: ball,
+            elem: h1,
+            render() {
+              const { x, y } = this.body.position;
+              const transformValue = `translate(${x - this.w / 2}px, ${
+                y - this.h / 10
+              }px)`;
+              this.elem.style.transform = transformValue;
+            },
+          };
+          Matter.Composite.add(engine.world, [ballLetter.body]);
+          function rerender() {
+            ballLetter.render();
+            requestAnimationFrame(rerender);
+          }
+          rerender();
+        }
+
+        function clearGetLettersList() {
+          const indicesToRemove = [];
+          for (let i = 0; i < destroyBalls.length; i++) {
+            for (let j = 0; j < getLettersList.length; j++) {
+              const element = getLettersList[j];
+              if (destroyBalls[i].label === element.innerHTML) {
+                gameElements.gameContainer.removeChild(element);
+                indicesToRemove.push(j);
+              }
+            }
+          }
+          indicesToRemove.sort((a, b) => b - a);
+          for (const index of indicesToRemove) {
+            getLettersList.splice(index, 1);
+          }
+        }
+
+        function nextLevelPrepare() {
+          gameElements.groundImage.src = "assets/orange-pane.png";
+          gameElements.correctAnswer.style.display = "none";
+          gameElements.answerTitle.textContent = "";
+          destroyBalls = [];
+          createBall(6);
+        }
+        function createWall() {
+          const leftWall = Bodies.rectangle(-9, 200, 20, 450, {
+            isStatic: true,
+          });
+          const rightWall = Bodies.rectangle(509, 200, 20, 400, {
+            isStatic: true,
+          });
+          World.add(engine.world, [leftWall, rightWall]);
+        }
+
+        createWall();
+        Engine.run(engine);
+        let gameFinish = false;
+
+        let tutorialLetterIndex = 0;
+        function clickBall() {
+          const mousePosition = {
+            x: event.clientX - canvas.getBoundingClientRect().left,
+            y: event.clientY - canvas.getBoundingClientRect().top,
+          };
+          function clearAllGetLettersList() {
+            getLettersList.forEach((h1) => {
+              gameElements.gameContainer.removeChild(h1);
+            });
+            getLettersList = [];
+          }
+          balls.forEach((ball, index) => {
+            if (Bounds.contains(ball.bounds, mousePosition)) {
+              if (!isTutorialEnd) {
+                TutorialModeClick(ball);
+              } else {
+                UnTutorialModeClick(ball);
+              }
+            }
+          });
+        }
+
+        function TutorialModeClick(ball) {
+          switch (ball.label) {
+            case "W":
+              handleTutorialStep("O", ball);
+              break;
+            case "O":
+              handleTutorialStep("R", ball);
+              break;
+            case "R":
+              handleTutorialStep("K", ball);
+              break;
+            case "K":
+              handleTutorialStep("", ball);
+              break;
+          }
+        }
+
+        function UnTutorialModeClick(ball) {
+          gameElements.wrongAnswer.style.display = "block";
+          gameElements.correctAnswer.style.display = "none";
+          gameElements.groundImage.src = "assets/gray-pane.png";
+          tutorialLetterIndex++;
+          checkElementHasAlreadyInclude(ball);
+          checkWordIsCorrect();
+          CreateHandTutorial("O");
+          gameElements.cancelButton.addEventListener(
+            "click",
+            clickCancelButton
+          );
+        }
+
+        function handleTutorialStep(nextLetter, ball) {
+          if (tutorialLetterIndex === getNextIndex()) {
+            gameElements.wrongAnswer.style.display = "block";
+            gameElements.correctAnswer.style.display = "none";
+            gameElements.groundImage.src = "assets/gray-pane.png";
+            tutorialLetterIndex++;
+            checkElementHasAlreadyInclude(ball);
+            checkWordIsCorrect();
+            CreateHandTutorial(nextLetter);
+          }
+        }
+
+        function getNextIndex() {
+          return tutorialLetterIndex;
+        }
+
+        function ChangeColorOfLetter(ball, color) {
+          for (let i = 0; i < getLettersList.length; i++) {
+            if (ball.label === getLettersList[i].textContent) {
+              getLettersList[i].style.color = color;
+            }
+          }
+        }
+
+        function hiddenAnswerTitle() {
+          setTimeout(() => {
+            gameElements.answerPart.className = "make-visible-answer-part";
+          }, 500);
+        }
+
+        function noLeftBallAndFinishGame() {
+          if (destroyBalls.length > 0) {
+            destroyBalls[0].render.visible = false;
+            World.remove(engine.world, destroyBalls[0]);
+            getLettersList.forEach((h1) => {
+              if (destroyBalls[0].label == h1.textContent) {
+                gameElements.gameContainer.removeChild(h1);
+              }
+            });
+            destroyBalls.splice(0, 1);
+          } else {
+            hiddenAnswerTitle();
+          }
+        }
+
+        function gameFinishFunction() {
+          gameElements.answerTitle.textContent = "";
+          gameElements.groundImage.src = "assets/orange-pane.png";
+          gameElements.wrongAnswer.style.display = "none";
+          gameElements.correctAnswer.style.display = "none";
+          destroyBalls = balls;
+          balls.forEach((element) => {
+            element.isStatic = true;
+          });
+          let elementIndex = 0;
+          setInterval(() => {
+            noLeftBallAndFinishGame();
+          }, 50);
+        }
+
+        function handleNextLevelClick() {
+          if (!isTutorialEnd) {
+            isTutorialEnd = true;
+            console.log(isTutorialEnd);
+          }
+          if (!gameFinish) {
+            clearGetLettersList();
+            for (let i = 0; i < destroyBalls.length; i++) {
+              const destroyBall = destroyBalls[i];
+              if (destroyBall.parent !== undefined) {
+                destroyBall.parent.isSensor = true;
+              }
+              destroyBall.render.visible = false;
+              World.remove(engine.world, destroyBall);
+              const indexInBalls = balls.indexOf(destroyBall);
+              if (indexInBalls !== -1) {
+                balls.splice(indexInBalls, 1);
+              }
+            }
+            nextLevelPrepare();
+          }
+        }
+
+        function checkElementHasAlreadyInclude(ball) {
+          if (destroyBalls.includes(ball)) {
+            ChangeColorOfLetter(ball, "#c66f4f");
+            let index = gameElements.answerTitle.textContent.indexOf(
+              ball.label
+            );
+            ball.render.sprite.texture = "assets/new-bubble-white.png";
+            gameElements.answerTitle.textContent =
+              gameElements.answerTitle.textContent.slice(0, index) +
+              gameElements.answerTitle.textContent.slice(index + 1);
+            destroyBalls.splice(index, 1);
+          } else {
+            if (gameElements.answerTitle.textContent.length < 4) {
+              destroyBalls.push(ball);
+              ChangeColorOfLetter(ball, "white");
+              gameElements.answerTitle.textContent += `${ball.label}`;
+              ball.render.sprite.texture = "assets/newCircle.png";
+            }
+          }
+        }
+
+        function checkWordIsCorrect() {
+          switch (gameElements.answerTitle.textContent) {
+            case "WORK":
+            case "SAVE":
+            case "LUNA":
+              gameElements.groundImage.src = "assets/green-pane.png";
+              gameElements.wrongAnswer.style.display = "none";
+              gameElements.correctAnswer.style.display = "block";
+              gameElements.nextLevelButton.addEventListener(
+                "click",
+                handleNextLevelClick
+              );
+
+              break;
+            case "SON":
+              gameElements.groundImage.src = "assets/green-pane.png";
+              gameElements.wrongAnswer.style.display = "none";
+              gameElements.correctAnswer.style.display = "block";
+              gameFinish = true;
+              gameElements.nextLevelButton.addEventListener(
+                "click",
+                gameFinishFunction
+              );
+              break;
+            default:
+              if (gameElements.answerTitle.textContent.length === 0) {
+                gameElements.groundImage.src = "assets/orange-pane.png";
+                gameElements.wrongAnswer.style.display = "none";
+                gameElements.correctAnswer.style.display = "none";
+              }
+          }
+        }
+
+        function clickCancelButton() {
+          gameElements.groundImage.src = "assets/orange-pane.png";
+          gameElements.wrongAnswer.style.display = "none";
+          gameElements.correctAnswer.style.display = "none";
+          gameElements.answerTitle.textContent = "";
+
+          destroyBalls.forEach((ball) => {
+            ChangeColorOfLetter(ball, "#c66f4f");
+            ball.render.sprite.texture = "assets/new-bubble-white.png";
+          });
+          destroyBalls = [];
+        }
+        canvas.addEventListener("click", clickBall);
+        engine.world.gravity.y = 1;
+      });
+    </script>
+  </body>
+</html>

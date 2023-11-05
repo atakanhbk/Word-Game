@@ -1,0 +1,22 @@
+{
+  "bundles": [
+    {
+      "name": "game",
+      "assets": [
+        {
+          "name": "logo",
+          "srcs": "assets/core/logo_white.png"
+        }
+      ]
+    },
+    {
+      "name": "fonts",
+      "assets": [
+        {
+          "name": "font",
+          "srcs": "assets//Sniglet-Regular.ttf"
+        }
+      ]
+    }
+  ]
+}
