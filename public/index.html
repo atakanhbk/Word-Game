@@ -346,6 +346,8 @@
         gameElements.gameContainer.appendChild(handImage);
 
         function CreateHandTutorial(ballLabel) {
+          
+       
           const gameContainer = gameElements.gameContainer;
           const handImage = gameContainer.querySelector(".hand-image");
 
@@ -355,6 +357,7 @@
 
           if (ballLabel !== "" && !isTutorialEnd) {
             setTimeout(() => {
+              canClick = true;
               gameElements.tutorialTitle.style.display = "block";
               const ball = balls.find((element) => element.label === ballLabel);
               ChangeColorOfLetter(ball, "white");
@@ -478,26 +481,29 @@
         let gameFinish = false;
 
         let tutorialLetterIndex = 0;
+        let canClick = false;
         function clickBall() {
-          const mousePosition = {
-            x: event.clientX - canvas.getBoundingClientRect().left,
-            y: event.clientY - canvas.getBoundingClientRect().top,
-          };
-          function clearAllGetLettersList() {
-            getLettersList.forEach((h1) => {
-              gameElements.gameContainer.removeChild(h1);
-            });
-            getLettersList = [];
-          }
-          balls.forEach((ball, index) => {
-            if (Bounds.contains(ball.bounds, mousePosition)) {
-              if (!isTutorialEnd) {
-                TutorialModeClick(ball);
-              } else {
-                UnTutorialModeClick(ball);
-              }
+          if (canClick) {
+            const mousePosition = {
+              x: event.clientX - canvas.getBoundingClientRect().left,
+              y: event.clientY - canvas.getBoundingClientRect().top,
+            };
+            function clearAllGetLettersList() {
+              getLettersList.forEach((h1) => {
+                gameElements.gameContainer.removeChild(h1);
+              });
+              getLettersList = [];
             }
-          });
+            balls.forEach((ball, index) => {
+              if (Bounds.contains(ball.bounds, mousePosition)) {
+                if (!isTutorialEnd) {
+                  TutorialModeClick(ball);
+                } else {
+                  UnTutorialModeClick(ball);
+                }
+              }
+            });
+          }
         }
 
         function TutorialModeClick(ball) {
@@ -542,7 +548,7 @@
             checkElementHasAlreadyInclude(ball);
             checkWordIsCorrect();
             CreateHandTutorial(nextLetter);
-           
+            canClick = false;
           }
 
           if(nextLetter === ""){
@@ -608,6 +614,7 @@
         function handleNextLevelClick() {
           if (!isTutorialEnd) {
             isTutorialEnd = true;
+            canClick = true;
             gameElements.tutorialTitle.style.display = "none";
             console.log(isTutorialEnd);
           }
