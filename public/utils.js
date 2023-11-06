@@ -214,6 +214,7 @@ const removeBallFromDestroyBalls = (ball) => {
 
     return index;
   }
+  
   return -1;
 };
 

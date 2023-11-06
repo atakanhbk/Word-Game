@@ -1,5 +1,4 @@
 import { gameElements, gameVariables } from "./variables.js";
-
 import {
   changeColorOfBall,
   changeColorOfLetter,
@@ -18,7 +17,6 @@ import {
 
 document.addEventListener("DOMContentLoaded", function () {
   const { Engine, Render, Runner, Bodies, World, Bounds } = Matter;
-
   const engine = Engine.create();
   const render = Render.create({
     element: gameElements.gameContainer,
@@ -29,16 +27,13 @@ document.addEventListener("DOMContentLoaded", function () {
       wireframes: false,
     },
   });
-  const canvas = render.canvas;
 
+  const canvas = render.canvas;
   Render.run(render);
   Runner.run(Runner.create(), engine);
-
   const ground = createGround(Bodies);
   World.add(engine.world, ground);
-
   reduceBallShaking(engine, 50);
-
   spawnLetterList();
 
   const createBall = (ballNumber) => {
@@ -74,7 +69,6 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   startGame(createBall, 13);
-
   createHandImage();
 
   const createHandTutorial = (ballLabel) => {
@@ -94,12 +88,10 @@ document.addEventListener("DOMContentLoaded", function () {
         );
         changeColorOfLetter(ball, "white", gameVariables.getLettersList);
         changeColorOfBall(ball, "assets/newCircle.png");
-
         const handImage = document.createElement("img");
         handImage.className = "hand-image";
         handImage.src = "assets/hand.png";
         gameElements.gameContainer.appendChild(handImage);
-
         const handImageMatter = {
           w: 500,
           h: 500,
@@ -128,7 +120,6 @@ document.addEventListener("DOMContentLoaded", function () {
           },
         };
         Matter.Composite.add(engine.world, [handImageMatter.body]);
-
         function loop() {
           handImageMatter.render();
           requestAnimationFrame(loop);
@@ -168,7 +159,6 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   createWall(Bodies, World, engine);
-
   Engine.run(engine);
 
   const clickBall = () => {

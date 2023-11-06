@@ -95,7 +95,6 @@ button {
   z-index: -1;
   width: 30px;
 }
-
 @font-face {
   font-family: "Sniglet-Regular";
   src: url("fonts/Sniglet-Regular.woff2") format("woff2"),
@@ -115,7 +114,6 @@ button {
   font-family: "Sniglet-Regular", sans-serif;
   border-radius: 50%;
 }
-
 .answer-title {
   padding: 20px;
   font-family: "Sniglet-Regular", sans-serif;
@@ -127,7 +125,6 @@ button {
   height: 120px;
   width: 400px;
 }
-
 .make-visible-answer-part {
   width: 475px;
   height: 60px;
@@ -150,7 +147,6 @@ button {
   z-index: 9;
   pointer-events: none;
 }
-
 .tutorial-title {
   position: absolute;
   border: 1px solid #744724;

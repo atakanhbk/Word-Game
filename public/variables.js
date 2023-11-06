@@ -11,7 +11,6 @@ class GameElements {
     this.tutorialTitle = document.querySelector(".tutorial-title");
   }
 }
-
 class GameVariables {
   gameFinish = false;
   isTutorialEnd = false;
@@ -28,5 +27,4 @@ class GameVariables {
 }
 
 export const gameVariables = new GameVariables();
-
 export const gameElements = new GameElements();
