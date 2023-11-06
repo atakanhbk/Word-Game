@@ -242,5 +242,4 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   canvas.addEventListener("click", clickBall);
-  engine.world.gravity.y = 1;
 });
