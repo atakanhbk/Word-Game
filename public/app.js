@@ -15,6 +15,8 @@ import {
   startGame,
 } from "./utils.js";
 
+//Dogru Kelimeler sırasıyla "WORD" , "SAVE" , "LUNA" , "SON".
+
 document.addEventListener("DOMContentLoaded", function () {
   const { Engine, Render, Runner, Bodies, World, Bounds } = Matter;
   const engine = Engine.create();
