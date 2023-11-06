@@ -25,6 +25,7 @@ class GameVariables {
   balls = [];
   destroyBalls = [];
   randomLetterList = [];
+  getLettersList = [];
 }
 
 export const gameVariables = new GameVariables();

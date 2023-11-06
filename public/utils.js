@@ -46,8 +46,6 @@ export const spawnLetterList = () => {
   gameVariables.randomLetterList.push(...firstPart, ...secondPart, ...thirdPart);
 };
 
-
-
 export const hiddenAnswerTitle = () =>
   setTimeout(() => {
     gameElements.answerPart.className = "make-visible-answer-part";

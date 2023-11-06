@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const ball = gameVariables.balls.find(
           (element) => element.label === ballLabel
         );
-        changeColorOfLetter(ball, "white", getLettersList);
+        changeColorOfLetter(ball, "white",  gameVariables.getLettersList);
         changeColorOfBall(ball, "assets/newCircle.png");
 
         const handImage = document.createElement("img");
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const startGame = () => createBall(13);
   startGame();
 
-  let getLettersList = [];
+
 
   const getLetters = (ball) => {
     const h1 = document.createElement("h1");
@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
     h1.className = "ballLetter";
     h1.style.pointerEvents = "none";
     gameElements.gameContainer.appendChild(h1);
-    getLettersList.push(h1);
+    gameVariables.getLettersList.push(h1);
     const ballLetter = {
       w: 500,
       h: 500,
@@ -264,12 +264,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const ballToDestroy = gameVariables.destroyBalls[0];
     hideBall(ballToDestroy);
 
-    const letterIndex = getLettersList.findIndex(
+    const letterIndex =  gameVariables.getLettersList.findIndex(
       (h1) => ballToDestroy.label == h1.textContent
     );
     if (letterIndex !== -1) {
       removeLetterFromList(
-        getLettersList[letterIndex],
+        gameVariables.getLettersList[letterIndex],
         gameElements.gameContainer
       );
     }
@@ -296,9 +296,9 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const removeAndClearBalls = () => {
-    getLettersList = clearGetLettersList(
+    gameVariables.getLettersList = clearGetLettersList(
       gameVariables.destroyBalls,
-      getLettersList,
+      gameVariables.getLettersList,
       gameElements
     );
     for (const destroyBall of gameVariables.destroyBalls) {
@@ -348,14 +348,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const index = removeBallFromDestroyBalls(ball);
 
     if (gameVariables.isTutorialEnd && index !== -1) {
-      changeColorOfLetter(ball, "#c66f4f", getLettersList);
+      changeColorOfLetter(ball, "#c66f4f",  gameVariables.getLettersList);
       changeColorOfBall(ball, "assets/new-bubble-white.png");
       gameElements.answerTitle.textContent =
         gameElements.answerTitle.textContent.slice(0, index) +
         gameElements.answerTitle.textContent.slice(index + 1);
     } else if (gameElements.answerTitle.textContent.length < 4) {
       addBallToDestroyBalls(ball);
-      changeColorOfLetter(ball, "white", getLettersList);
+      changeColorOfLetter(ball, "white",  gameVariables.getLettersList);
       gameElements.answerTitle.textContent += ball.label;
       changeColorOfBall(ball, "assets/newCircle.png");
     }
@@ -392,7 +392,7 @@ document.addEventListener("DOMContentLoaded", function () {
     gameElements.answerTitle.textContent = "";
 
     gameVariables.destroyBalls.forEach((ball) => {
-      changeColorOfLetter(ball, "#c66f4f", getLettersList);
+      changeColorOfLetter(ball, "#c66f4f",  gameVariables.getLettersList);
       ball.render.sprite.texture = "assets/new-bubble-white.png";
     });
     gameVariables.destroyBalls.splice(0, gameVariables.destroyBalls.length);
