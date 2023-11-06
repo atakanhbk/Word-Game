@@ -122,7 +122,7 @@ export const noLeftBallAndFinishGame = (world, engine) => {
   }
 };
 
-export const gameFinishFunction = (world,engine) => {
+export const gameFinishFunction = (world, engine) => {
   //User Cant Choose Ball While They Are Destroying
   gameVariables.canClick = false;
   gameElements.answerTitle.textContent = "";
@@ -139,6 +139,30 @@ export const gameFinishFunction = (world,engine) => {
     noLeftBallAndFinishGame(world, engine);
   }, 50);
 };
+
+export const checkWordIsCorrect = (createBallFunction, world, engine) => {
+  switch (gameElements.answerTitle.textContent) {
+    case gameVariables.correctWordList[0]: //Burayo değiştir
+    case gameVariables.correctWordList[1]:
+    case gameVariables.correctWordList[2]:
+      handleCorrectAnswer();
+      gameElements.nextLevelButton.addEventListener("click", () =>
+        handleNextLevelClick(createBallFunction, world, engine)
+      );
+      break;
+    case gameVariables.correctWordList[3]:
+      handleCorrectAnswer();
+      gameVariables.gameFinish = true;
+      gameElements.nextLevelButton.addEventListener("click", () =>
+        gameFinishFunction(world, engine)
+      );
+      break;
+    default:
+      handleDefaultAnswer();
+  }
+};
+
+export const getNextIndex = () => gameVariables.tutorialLetterIndex;
 
 export const nextLevelPrepare = (createBall, createBallNumber) => {
   gameElements.groundImage.src = "assets/orange-pane.png";

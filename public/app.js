@@ -21,7 +21,9 @@ import {
   checkElementHasAlreadyInclude,
   continueToDestroyBalls,
   noLeftBallAndFinishGame,
-  gameFinishFunction
+  gameFinishFunction,
+  checkWordIsCorrect,
+  getNextIndex
 } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -80,6 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }, 300);
   };
+  
 
   const handImage = document.createElement("img");
   handImage.className = "hand-img";
@@ -220,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
     gameElements.groundImage.src = "assets/gray-pane.png";
     gameVariables.tutorialLetterIndex++;
     checkElementHasAlreadyInclude(ball);
-    checkWordIsCorrect();
+    checkWordIsCorrect(createBall, World, engine);
     createHandTutorial("O");
     gameElements.cancelButton.addEventListener("click", clickCancelButton);
   };
@@ -233,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
       gameElements.groundImage.src = "assets/gray-pane.png";
       gameVariables.tutorialLetterIndex++;
       checkElementHasAlreadyInclude(ball);
-      checkWordIsCorrect();
+      checkWordIsCorrect(createBall, World, engine);
       createHandTutorial(nextLetter);
       gameVariables.canClick = false;
     }
@@ -241,32 +244,7 @@ document.addEventListener("DOMContentLoaded", function () {
     showClickTickTitle(nextLetter);
   };
 
-  const getNextIndex = () => gameVariables.tutorialLetterIndex;
 
- 
-
-  const checkWordIsCorrect = () => {
-    switch (gameElements.answerTitle.textContent) {
-      case gameVariables.correctWordList[0]: //Burayo değiştir
-      case gameVariables.correctWordList[1]:
-      case gameVariables.correctWordList[2]:
-        handleCorrectAnswer();
-        gameElements.nextLevelButton.addEventListener("click", () =>
-          handleNextLevelClick(createBall, World, engine)
-        );
-        break;
-      case gameVariables.correctWordList[3]:
-        handleCorrectAnswer();
-        gameVariables.gameFinish = true;
-        gameElements.nextLevelButton.addEventListener(
-          "click", () =>
-          gameFinishFunction(World,engine)
-        );
-        break;
-      default:
-        handleDefaultAnswer();
-    }
-  };
 
   canvas.addEventListener("click", clickBall);
   engine.world.gravity.y = 1;
