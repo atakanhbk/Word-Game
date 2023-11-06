@@ -1,0 +1,168 @@
+body,
+html {
+  margin: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+  margin: 0;
+}
+body {
+  background: #1e1e37;
+}
+canvas {
+  background-color: #f19648 !important;
+}
+#logo {
+  width: 100%;
+  max-width: 150px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+#bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: url("./assets/core/pattern.png") repeat center center fixed;
+}
+.game-container {
+  width: 500px;
+  height: 400px;
+  border: 1px solid #f19648;
+  background-color: #f19648;
+  display: flex;
+  justify-content: center;
+}
+.answer-part {
+  width: 475px;
+  height: 60px;
+  position: absolute;
+  color: white;
+  font-weight: bold;
+  transform: translate(0px, 300px);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  display: flex;
+  font-size: 50px;
+  letter-spacing: 20px;
+}
+.answer-result-part {
+  position: absolute;
+  right: 0px;
+  font-size: 30px;
+}
+.correct-answer {
+  display: none;
+}
+.wrong-answer {
+  display: none;
+}
+.answer-result-part {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.ball-image {
+  width: 30px; /* Set the desired width */
+  height: 30px; /* Set the desired height */
+}
+.ground-image {
+  width: 100%;
+  height: 100%;
+  right: 0px;
+  position: absolute;
+  z-index: -1;
+}
+button {
+  border: 0px;
+  background: none;
+}
+.hand-image,
+.cross-image,
+.tick-image {
+  z-index: -1;
+  width: 30px;
+}
+
+@font-face {
+  font-family: "Sniglet-Regular";
+  src: url("fonts/Sniglet-Regular.woff2") format("woff2"),
+    /* WOFF2 format */ url("fonts/Sniglet-Regular.woff") format("woff"); /* WOFF format */
+  /* Add additional formats if available */
+}
+.ballLetter {
+  position: absolute;
+  color: #c66f4f;
+  height: 50px;
+  width: 50px;
+  cursor: move;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Sniglet-Regular", sans-serif;
+  border-radius: 50%;
+}
+
+.answer-title {
+  padding: 20px;
+  font-family: "Sniglet-Regular", sans-serif;
+}
+#ground {
+  position: absolute;
+  background: #666;
+  top: 440px;
+  height: 120px;
+  width: 400px;
+}
+
+.make-visible-answer-part {
+  width: 475px;
+  height: 60px;
+  position: absolute;
+  color: white;
+  font-weight: bold;
+  transform: translate(0px, 300px);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  display: flex;
+  font-size: 50px;
+  letter-spacing: 20px;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.hand-image {
+  position: absolute;
+  z-index: 9;
+  pointer-events: none;
+}
+
+.tutorial-title {
+  position: absolute;
+  border: 1px solid #744724;
+  border-radius: 40px;
+  padding: 20px;
+  margin-top: 20px;
+  background-color: #744724;
+  color: white;
+  font-family: "Sniglet-Regular", sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+  display: none;
+  transform: translate(0);
+  transition: transform 0.5s ease;
+}
