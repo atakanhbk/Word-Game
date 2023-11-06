@@ -17,6 +17,9 @@
         justify-content: center;
         user-select: none;
         overflow: hidden;
+        position: relative;
+        height: 100%;
+        margin: 0;
       }
       body {
         background: #1e1e37;
@@ -40,7 +43,7 @@
         z-index: -1;
         background: url("./assets/core/pattern.png") repeat center center fixed;
       }
-      #game-container {
+      .game-container {
         width: 500px;
         height: 400px;
         border: 1px solid #f19648;
@@ -80,13 +83,7 @@
         align-items: center;
         margin-right: 10px;
       }
-      .ball-image {
-        width: 50px; /* Set the desired width */
-        height: 50px; /* Set the desired height */
-      }
-      img {
-        width: 30px;
-      }
+
       .ball-image {
         width: 30px; /* Set the desired width */
         height: 30px; /* Set the desired height */
@@ -102,9 +99,13 @@
         border: 0px;
         background: none;
       }
-      img {
+      .hand-image,
+      .cross-image,
+      .tick-image {
         z-index: -1;
+        width: 30px;
       }
+
       @font-face {
         font-family: "Sniglet-Regular";
         src: url("fonts/Sniglet-Regular.woff2") format("woff2"),
@@ -136,12 +137,7 @@
         height: 120px;
         width: 400px;
       }
-      html,
-      body {
-        position: relative;
-        height: 100%;
-        margin: 0;
-      }
+
       .make-visible-answer-part {
         width: 475px;
         height: 60px;
@@ -184,8 +180,8 @@
   </head>
   <body>
     <div id="bg"></div>
-    <img id="ball-image" src="assets/circle.png" style="display: none" />
-    <div id="game-container">
+
+    <div class="game-container">
       <img id="logo" src="./assets/core/logo_white.png" alt="loading" />
       <div class="tutorial-title">LETTERS DON'T HAVE TO BE TOUCHING</div>
       <div class="answer-part">
@@ -194,12 +190,12 @@
         <div class="answer-result-part">
           <div class="wrong-answer">
             <button class="cancel-button">
-              <img src="assets/cross.png" alt="" />
+              <img class="cross-image" src="assets/cross.png" alt="" />
             </button>
           </div>
           <div class="correct-answer">
             <button class="next-level-button">
-              <img src="assets/tick.png" alt="" />
+              <img class="tick-image" src="assets/tick.png" alt="" />
             </button>
           </div>
         </div>
@@ -211,7 +207,7 @@
 
         class GameElements {
           constructor() {
-            this.gameContainer = document.getElementById("game-container");
+            this.gameContainer = document.querySelector(".game-container");
             this.answerPart = document.querySelector(".answer-part");
             this.answerTitle = document.querySelector(".answer-title");
             this.wrongAnswer = document.querySelector(".wrong-answer");
@@ -226,7 +222,7 @@
         let isTutorialEnd = false;
 
         const gameElements = new GameElements();
-
+        console.log(gameElements.gameContainer);
         const engine = Engine.create();
         const render = Render.create({
           element: gameElements.gameContainer,
@@ -239,23 +235,14 @@
         });
         const canvas = render.canvas;
 
-        function createRender() {
-          return Render.create({
-            element: gameContainer,
-            engine: engine,
-            options: { width: 500, height: 400, wireframes: false },
-          });
-        }
-
         Render.run(render);
         Runner.run(Runner.create(), engine);
 
-        function createGround() {
-          return Bodies.rectangle(250, 340, 500, 80, {
+        const createGround = () =>
+          Bodies.rectangle(250, 340, 500, 80, {
             isStatic: true,
             render: { fillStyle: "#F19648" },
           });
-        }
 
         const ground = createGround();
         World.add(engine.world, ground);
@@ -264,7 +251,7 @@
         let getLetterIndex = 0;
         const randomLetterList = [];
 
-        function spawnLetterList() {
+        const spawnLetterList = () => {
           const firstPart = [
             "W",
             "B",
@@ -298,17 +285,16 @@
 
           // Assign the values to the global variable
           randomLetterList.push(...firstPart, ...secondPart, ...thirdPart);
-        }
+        };
 
-        function ReduceBallShaking() {
-          engine.velocityIterations = 50;
-        }
-        ReduceBallShaking();
+        const reduceBallShaking = () => (engine.velocityIterations = 50);
+
+        reduceBallShaking();
 
         spawnLetterList();
         let createBallInterval = null;
 
-        function createBall(ballNumber) {
+        const createBall = (ballNumber) => {
           let counter = 0;
           if (createBallInterval !== null) {
             clearInterval(createBallInterval);
@@ -326,7 +312,7 @@
                 },
               },
             });
-        
+
             getLetterIndex++;
             balls.push(ball);
             World.add(engine.world, ball);
@@ -334,20 +320,18 @@
             getLetters(ball);
 
             if (counter >= ballNumber) {
-              CreateHandTutorial("W");
+              createHandTutorial("W");
               clearInterval(createBallInterval);
             }
           }, 300);
-        }
+        };
 
         const handImage = document.createElement("img");
         handImage.className = "hand-img";
 
         gameElements.gameContainer.appendChild(handImage);
 
-        function CreateHandTutorial(ballLabel) {
-          
-       
+        const createHandTutorial = (ballLabel) => {
           const gameContainer = gameElements.gameContainer;
           const handImage = gameContainer.querySelector(".hand-image");
 
@@ -360,8 +344,8 @@
               canClick = true;
               gameElements.tutorialTitle.style.display = "block";
               const ball = balls.find((element) => element.label === ballLabel);
-              ChangeColorOfLetter(ball, "white");
-              ChangeColorOfBall(ball, "assets/newCircle.png");
+              changeColorOfLetter(ball, "white");
+              changeColorOfBall(ball, "assets/newCircle.png");
 
               const handImage = document.createElement("img");
               handImage.className = "hand-image";
@@ -405,16 +389,14 @@
               Matter.Composite.remove(engine.world, [handImageMatter.body]);
             }, 1000);
           }
-        }
+        };
 
-        function StartGame() {
-          createBall(13);
-        }
-        StartGame();
+        const startGame = () => createBall(13);
+        startGame();
 
         let getLettersList = [];
 
-        function getLetters(ball) {
+        const getLetters = (ball) => {
           const h1 = document.createElement("h1");
           h1.textContent = ball.label;
           h1.className = "ballLetter";
@@ -440,9 +422,9 @@
             requestAnimationFrame(rerender);
           }
           rerender();
-        }
+        };
 
-        function clearGetLettersList() {
+        const clearGetLettersList = () => {
           const indicesToRemove = [];
           for (let i = 0; i < destroyBalls.length; i++) {
             for (let j = 0; j < getLettersList.length; j++) {
@@ -457,16 +439,17 @@
           for (const index of indicesToRemove) {
             getLettersList.splice(index, 1);
           }
-        }
+        };
 
-        function nextLevelPrepare() {
+        const nextLevelPrepare = () => {
           gameElements.groundImage.src = "assets/orange-pane.png";
           gameElements.correctAnswer.style.display = "none";
           gameElements.answerTitle.textContent = "";
           destroyBalls = [];
           createBall(6);
-        }
-        function createWall() {
+        };
+
+        const createWall = () => {
           const leftWall = Bodies.rectangle(-9, 200, 20, 450, {
             isStatic: true,
           });
@@ -474,15 +457,16 @@
             isStatic: true,
           });
           World.add(engine.world, [leftWall, rightWall]);
-        }
+        };
 
         createWall();
+
         Engine.run(engine);
         let gameFinish = false;
-
         let tutorialLetterIndex = 0;
         let canClick = false;
-        function clickBall() {
+
+        const clickBall = () => {
           if (canClick) {
             const mousePosition = {
               x: event.clientX - canvas.getBoundingClientRect().left,
@@ -497,48 +481,42 @@
             balls.forEach((ball, index) => {
               if (Bounds.contains(ball.bounds, mousePosition)) {
                 if (!isTutorialEnd) {
-                  TutorialModeClick(ball);
+                  tutorialModeClick(ball);
                 } else {
-                  UnTutorialModeClick(ball);
+                  unTutorialModeClick(ball);
                 }
               }
             });
           }
-        }
+        };
 
-        function TutorialModeClick(ball) {
-        
-
-          if(ball.label === "W" && tutorialLetterIndex === 0){
+        const tutorialModeClick = (ball) => {
+          if (ball.label === "W" && tutorialLetterIndex === 0) {
             handleTutorialStep("O", ball);
-          }
-          else if(ball.label === "O" && tutorialLetterIndex === 1){
+          } else if (ball.label === "O" && tutorialLetterIndex === 1) {
             handleTutorialStep("R", ball);
-          }
-          else if(ball.label === "R" && tutorialLetterIndex === 2){
+          } else if (ball.label === "R" && tutorialLetterIndex === 2) {
             handleTutorialStep("K", ball);
-          }
-          else if(ball.label === "K" && tutorialLetterIndex === 3){
+          } else if (ball.label === "K" && tutorialLetterIndex === 3) {
             handleTutorialStep("", ball);
           }
-        }
+        };
 
-        function UnTutorialModeClick(ball) {
+        const unTutorialModeClick = (ball) => {
           gameElements.wrongAnswer.style.display = "block";
           gameElements.correctAnswer.style.display = "none";
           gameElements.groundImage.src = "assets/gray-pane.png";
           tutorialLetterIndex++;
           checkElementHasAlreadyInclude(ball);
           checkWordIsCorrect();
-          CreateHandTutorial("O");
+          createHandTutorial("O");
           gameElements.cancelButton.addEventListener(
             "click",
             clickCancelButton
           );
-        }
+        };
 
-        function handleTutorialStep(nextLetter, ball) {
-          
+        const handleTutorialStep = (nextLetter, ball) => {
           if (tutorialLetterIndex === getNextIndex()) {
             gameElements.tutorialTitle.style.transform = "translate(-450px)";
             gameElements.wrongAnswer.style.display = "block";
@@ -547,41 +525,39 @@
             tutorialLetterIndex++;
             checkElementHasAlreadyInclude(ball);
             checkWordIsCorrect();
-            CreateHandTutorial(nextLetter);
+            createHandTutorial(nextLetter);
             canClick = false;
           }
 
-          if(nextLetter === ""){
+          if (nextLetter === "") {
             gameElements.tutorialTitle.style.right = "-800px";
             gameElements.tutorialTitle.style.transform = "translate(-890px)";
-            gameElements.tutorialTitle.textContent = "TAP THE GREEN BOX TO CONFIRM";
-           
+            gameElements.tutorialTitle.textContent =
+              "TAP THE GREEN BOX TO CONFIRM";
           }
-        }
+        };
 
-        function getNextIndex() {
+        const getNextIndex = () => {
           return tutorialLetterIndex;
-        }
+        };
 
-        function ChangeColorOfLetter(ball, color) {
+        const changeColorOfLetter = (ball, color) => {
           for (let i = 0; i < getLettersList.length; i++) {
             if (ball.label === getLettersList[i].textContent) {
               getLettersList[i].style.color = color;
             }
           }
-        }
+        };
 
-        function ChangeColorOfBall(ball, texture) {
-          ball.render.sprite.texture = texture;
-        }
+        const changeColorOfBall = (ball, texture) =>
+          (ball.render.sprite.texture = texture);
 
-        function hiddenAnswerTitle() {
+        const hiddenAnswerTitle = () =>
           setTimeout(() => {
             gameElements.answerPart.className = "make-visible-answer-part";
           }, 500);
-        }
 
-        function noLeftBallAndFinishGame() {
+        const noLeftBallAndFinishGame = () => {
           if (destroyBalls.length > 0) {
             destroyBalls[0].render.visible = false;
             World.remove(engine.world, destroyBalls[0]);
@@ -594,9 +570,9 @@
           } else {
             hiddenAnswerTitle();
           }
-        }
+        };
 
-        function gameFinishFunction() {
+        const gameFinishFunction = () => {
           gameElements.answerTitle.textContent = "";
           gameElements.groundImage.src = "assets/orange-pane.png";
           gameElements.wrongAnswer.style.display = "none";
@@ -611,7 +587,7 @@
           }, 50);
         }
 
-        function handleNextLevelClick() {
+        const handleNextLevelClick = () => {
           if (!isTutorialEnd) {
             isTutorialEnd = true;
             canClick = true;
@@ -636,15 +612,15 @@
           }
         }
 
-        function checkElementHasAlreadyInclude(ball) {
+        const checkElementHasAlreadyInclude = (ball) => {
           if (destroyBalls.includes(ball)) {
             if (isTutorialEnd) {
-              ChangeColorOfLetter(ball, "#c66f4f");
+              changeColorOfLetter(ball, "#c66f4f");
               let index = gameElements.answerTitle.textContent.indexOf(
                 ball.label
               );
-              ChangeColorOfBall(ball, "assets/new-bubble-white.png");
-  
+              changeColorOfBall(ball, "assets/new-bubble-white.png");
+
               gameElements.answerTitle.textContent =
                 gameElements.answerTitle.textContent.slice(0, index) +
                 gameElements.answerTitle.textContent.slice(index + 1);
@@ -653,14 +629,14 @@
           } else {
             if (gameElements.answerTitle.textContent.length < 4) {
               destroyBalls.push(ball);
-              ChangeColorOfLetter(ball, "white");
+              changeColorOfLetter(ball, "white");
               gameElements.answerTitle.textContent += `${ball.label}`;
-              ChangeColorOfBall(ball, "assets/newCircle.png");
+              changeColorOfBall(ball, "assets/newCircle.png");
             }
           }
         }
 
-        function checkWordIsCorrect() {
+        const checkWordIsCorrect = () => {
           switch (gameElements.answerTitle.textContent) {
             case "WORK":
             case "SAVE":
@@ -693,14 +669,14 @@
           }
         }
 
-        function clickCancelButton() {
+        const clickCancelButton = () => {
           gameElements.groundImage.src = "assets/orange-pane.png";
           gameElements.wrongAnswer.style.display = "none";
           gameElements.correctAnswer.style.display = "none";
           gameElements.answerTitle.textContent = "";
 
           destroyBalls.forEach((ball) => {
-            ChangeColorOfLetter(ball, "#c66f4f");
+            changeColorOfLetter(ball, "#c66f4f");
             ball.render.sprite.texture = "assets/new-bubble-white.png";
           });
           destroyBalls = [];
