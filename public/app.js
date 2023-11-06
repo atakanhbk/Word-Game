@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
       render() {
         const { x, y } = this.body.position;
         const transformValue = `translate(${x - this.w / 2}px, ${
-          y - this.h / 10
+          y - this.h / 11
         }px)`;
         this.elem.style.transform = transformValue;
       },
