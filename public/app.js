@@ -1,12 +1,4 @@
-import {
-  balls,
-  gameElements,
-  gameVariables,
-  randomLetterList,
-  spawnLetterList,
-  destroyBalls,
-  equalDestroyBallsToBalls,
-} from "./variables.js";
+import { gameElements, gameVariables } from "./variables.js";
 
 import {
   hiddenAnswerTitle,
@@ -16,11 +8,13 @@ import {
   reduceBallShaking,
   createGround,
   createWall,
-  showClickTickTitle, 
+  showClickTickTitle,
   handleCorrectAnswer,
   handleDefaultAnswer,
   clearGetLettersList,
   endTutorial,
+  equalDestroyBallsToBalls,
+  spawnLetterList,
 } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -44,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const ground = createGround(Bodies);
   World.add(engine.world, ground);
 
-  gameVariables.getLetterIndex = 0;
+
 
   reduceBallShaking(engine, 50);
 
@@ -57,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     gameVariables.createBallInterval = setInterval(() => {
       const ball = Bodies.circle(250, 12, 33, {
-        label: randomLetterList[gameVariables.getLetterIndex],
+        label: gameVariables.randomLetterList[gameVariables.getLetterIndex],
         render: {
           fillStyle: "#C96336",
           text: { content: "A", color: "black", size: 150 },
@@ -70,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       gameVariables.getLetterIndex++;
-      balls.push(ball);
+      gameVariables.balls.push(ball);
       World.add(engine.world, ball);
       counter++;
       getLetters(ball);
@@ -99,7 +93,9 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => {
         gameVariables.canClick = true;
         gameElements.tutorialTitle.style.display = "block";
-        const ball = balls.find((element) => element.label === ballLabel);
+        const ball = gameVariables.balls.find(
+          (element) => element.label === ballLabel
+        );
         changeColorOfLetter(ball, "white", getLettersList);
         changeColorOfBall(ball, "assets/newCircle.png");
 
@@ -184,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
     gameElements.groundImage.src = "assets/orange-pane.png";
     gameElements.correctAnswer.style.display = "none";
     gameElements.answerTitle.textContent = "";
-    destroyBalls.splice(0, destroyBalls.length);
+    gameVariables.destroyBalls.splice(0, gameVariables.destroyBalls.length);
 
     createBall(6);
   };
@@ -200,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
         y: event.clientY - canvas.getBoundingClientRect().top,
       };
 
-      balls.forEach((ball) => {
+      gameVariables.balls.forEach((ball) => {
         if (Bounds.contains(ball.bounds, mousePosition)) {
           if (!gameVariables.isTutorialEnd) {
             tutorialModeClick(ball);
@@ -259,7 +255,7 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const noLeftBallAndFinishGame = () => {
-    if (destroyBalls.length > 0) {
+    if (gameVariables.destroyBalls.length > 0) {
       continueToDestroyBalls();
     } else {
       hiddenAnswerTitle();
@@ -267,7 +263,7 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const continueToDestroyBalls = () => {
-    const ballToDestroy = destroyBalls[0];
+    const ballToDestroy = gameVariables.destroyBalls[0];
     hideBall(ballToDestroy);
 
     const letterIndex = getLettersList.findIndex(
@@ -280,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     }
 
-    destroyBalls.splice(0, 1);
+    gameVariables.destroyBalls.splice(0, 1);
   };
 
   const gameFinishFunction = () => {
@@ -292,7 +288,7 @@ document.addEventListener("DOMContentLoaded", function () {
     gameElements.correctAnswer.style.display = "none";
     //Destroy All Balls
     equalDestroyBallsToBalls();
-    balls.forEach((element) => {
+    gameVariables.balls.forEach((element) => {
       element.isStatic = true;
     });
 
@@ -303,21 +299,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const removeAndClearBalls = () => {
     getLettersList = clearGetLettersList(
-      destroyBalls,
+      gameVariables.destroyBalls,
       getLettersList,
       gameElements
     );
-    for (const destroyBall of destroyBalls) {
+    for (const destroyBall of gameVariables.destroyBalls) {
       if (destroyBall?.parent) {
         destroyBall.parent.isSensor = true;
       }
 
       destroyBall.render.visible = false;
       World.remove(engine.world, destroyBall);
-      const indexInBalls = balls.indexOf(destroyBall);
+      const indexInBalls = gameVariables.balls.indexOf(destroyBall);
 
       if (indexInBalls !== -1) {
-        balls.splice(indexInBalls, 1);
+        gameVariables.balls.splice(indexInBalls, 1);
       }
     }
   };
@@ -334,9 +330,9 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const removeBallFromDestroyBalls = (ball) => {
-    const index = destroyBalls.indexOf(ball);
+    const index = gameVariables.destroyBalls.indexOf(ball);
     if (index !== -1) {
-      destroyBalls.splice(index, 1);
+      gameVariables.destroyBalls.splice(index, 1);
 
       return index;
     }
@@ -345,9 +341,9 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const addBallToDestroyBalls = (ball) => {
-    destroyBalls.push(ball);
+    gameVariables.destroyBalls.push(ball);
 
-    return destroyBalls.length - 1;
+    return gameVariables.destroyBalls.length - 1;
   };
 
   const checkElementHasAlreadyInclude = (ball) => {
@@ -369,16 +365,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const checkWordIsCorrect = () => {
     switch (gameElements.answerTitle.textContent) {
-      case "WORK": //Burayo değiştir
-      case "SAVE":
-      case "LUNA":
+      case gameVariables.correctWordList[0]: //Burayo değiştir
+      case gameVariables.correctWordList[1]:
+      case gameVariables.correctWordList[2]:
         handleCorrectAnswer();
         gameElements.nextLevelButton.addEventListener(
           "click",
           handleNextLevelClick
         );
         break;
-      case "SON":
+      case gameVariables.correctWordList[3]:
         handleCorrectAnswer();
         gameVariables.gameFinish = true;
         gameElements.nextLevelButton.addEventListener(
@@ -397,11 +393,11 @@ document.addEventListener("DOMContentLoaded", function () {
     gameElements.correctAnswer.style.display = "none";
     gameElements.answerTitle.textContent = "";
 
-    destroyBalls.forEach((ball) => {
+    gameVariables.destroyBalls.forEach((ball) => {
       changeColorOfLetter(ball, "#c66f4f", getLettersList);
       ball.render.sprite.texture = "assets/new-bubble-white.png";
     });
-    destroyBalls.splice(0, destroyBalls.length);
+    gameVariables.destroyBalls.splice(0, gameVariables.destroyBalls.length);
   };
   canvas.addEventListener("click", clickBall);
   engine.world.gravity.y = 1;

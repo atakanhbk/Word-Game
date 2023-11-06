@@ -6,6 +6,48 @@ export const endTutorial = () => {
   gameElements.tutorialTitle.style.display = "none";
 };
 
+export const equalDestroyBallsToBalls = () => {
+  gameVariables.destroyBalls = gameVariables.balls;
+};
+
+export const spawnLetterList = () => {
+  const firstPart = [
+    "W",
+    "B",
+    "O",
+    "S",
+    "R",
+    "F",
+    "G",
+    "H",
+    "J",
+    "Z",
+    "A",
+    "Y",
+    "K",
+  ];
+  const secondPart = ["V", "E", "L", "U", "P", "X"];
+  const thirdPart = [
+    "W",
+    "D",
+    "N",
+    "A",
+    "Q",
+    "R",
+    "A",
+    "N",
+    "Ğ",
+    "O",
+    "S",
+    "K",
+  ];
+
+  // Assign the values to the global variable
+  gameVariables.randomLetterList.push(...firstPart, ...secondPart, ...thirdPart);
+};
+
+
+
 export const hiddenAnswerTitle = () =>
   setTimeout(() => {
     gameElements.answerPart.className = "make-visible-answer-part";
