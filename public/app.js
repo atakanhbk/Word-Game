@@ -23,7 +23,9 @@ import {
   noLeftBallAndFinishGame,
   gameFinishFunction,
   checkWordIsCorrect,
-  getNextIndex
+  getNextIndex,
+  createHandImage,
+  startGame,
 } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -82,12 +84,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }, 300);
   };
-  
 
-  const handImage = document.createElement("img");
-  handImage.className = "hand-img";
+  startGame(createBall, 13);
 
-  gameElements.gameContainer.appendChild(handImage);
+  createHandImage();
 
   const createHandTutorial = (ballLabel) => {
     const gameContainer = gameElements.gameContainer;
@@ -150,9 +150,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }, 1000);
     }
   };
-
-  const startGame = () => createBall(13);
-  startGame();
 
   const getLetters = (ball) => {
     const h1 = document.createElement("h1");
@@ -243,8 +240,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     showClickTickTitle(nextLetter);
   };
-
-
 
   canvas.addEventListener("click", clickBall);
   engine.world.gravity.y = 1;

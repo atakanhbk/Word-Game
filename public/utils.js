@@ -162,6 +162,14 @@ export const checkWordIsCorrect = (createBallFunction, world, engine) => {
   }
 };
 
+export const startGame = (createBallFunction,createBallNumber) => createBallFunction(createBallNumber);
+
+export const createHandImage = () => {
+  const handImage = document.createElement("img");
+  handImage.className = "hand-img";
+  gameElements.gameContainer.appendChild(handImage);
+};
+
 export const getNextIndex = () => gameVariables.tutorialLetterIndex;
 
 export const nextLevelPrepare = (createBall, createBallNumber) => {
