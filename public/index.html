@@ -658,24 +658,33 @@
           }
         };
 
+        const handleCorrectAnswer = () => {
+          gameElements.groundImage.src = "assets/green-pane.png";
+          gameElements.wrongAnswer.style.display = "none";
+          gameElements.correctAnswer.style.display = "block";
+        };
+
+        const handleDefaultAnswer = () => {
+          if (gameElements.answerTitle.textContent.length === 0) {
+            gameElements.groundImage.src = "assets/orange-pane.png";
+            gameElements.wrongAnswer.style.display = "none";
+            gameElements.correctAnswer.style.display = "none";
+          }
+        };
+
         const checkWordIsCorrect = () => {
           switch (gameElements.answerTitle.textContent) {
             case "WORK":
             case "SAVE":
             case "LUNA":
-              gameElements.groundImage.src = "assets/green-pane.png";
-              gameElements.wrongAnswer.style.display = "none";
-              gameElements.correctAnswer.style.display = "block";
+              handleCorrectAnswer();
               gameElements.nextLevelButton.addEventListener(
                 "click",
                 handleNextLevelClick
               );
-
               break;
             case "SON":
-              gameElements.groundImage.src = "assets/green-pane.png";
-              gameElements.wrongAnswer.style.display = "none";
-              gameElements.correctAnswer.style.display = "block";
+              handleCorrectAnswer();
               gameFinish = true;
               gameElements.nextLevelButton.addEventListener(
                 "click",
@@ -683,11 +692,7 @@
               );
               break;
             default:
-              if (gameElements.answerTitle.textContent.length === 0) {
-                gameElements.groundImage.src = "assets/orange-pane.png";
-                gameElements.wrongAnswer.style.display = "none";
-                gameElements.correctAnswer.style.display = "none";
-              }
+              handleDefaultAnswer();
           }
         };
 
