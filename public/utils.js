@@ -6,7 +6,7 @@ export const endTutorial = () => {
   gameElements.tutorialTitle.style.display = "none";
 };
 
-export const equalDestroyBallsToBalls = () => {
+const equalDestroyBallsToBalls = () => {
   gameVariables.destroyBalls = gameVariables.balls;
 };
 
@@ -50,13 +50,13 @@ export const spawnLetterList = () => {
   );
 };
 
-export const addBallToDestroyBalls = (ball) => {
+const addBallToDestroyBalls = (ball) => {
   gameVariables.destroyBalls.push(ball);
 
   return gameVariables.destroyBalls.length - 1;
 };
 
-export const handleNextLevelClick = (callCreateBallFunction, world, engine) => {
+const handleNextLevelClick = (callCreateBallFunction, world, engine) => {
   if (!gameVariables.isTutorialEnd) {
     endTutorial();
   }
@@ -97,7 +97,7 @@ export const checkElementHasAlreadyInclude = (ball) => {
   }
 };
 
-export const continueToDestroyBalls = (world, engine) => {
+const continueToDestroyBalls = (world, engine) => {
   const ballToDestroy = gameVariables.destroyBalls[0];
   hideBall(ballToDestroy, world, engine);
 
@@ -114,7 +114,7 @@ export const continueToDestroyBalls = (world, engine) => {
   gameVariables.destroyBalls.splice(0, 1);
 };
 
-export const noLeftBallAndFinishGame = (world, engine) => {
+const noLeftBallAndFinishGame = (world, engine) => {
   if (gameVariables.destroyBalls.length > 0) {
     continueToDestroyBalls(world, engine);
   } else {
@@ -122,7 +122,7 @@ export const noLeftBallAndFinishGame = (world, engine) => {
   }
 };
 
-export const gameFinishFunction = (world, engine) => {
+const gameFinishFunction = (world, engine) => {
   //User Cant Choose Ball While They Are Destroying
   gameVariables.canClick = false;
   gameElements.answerTitle.textContent = "";
@@ -172,7 +172,7 @@ export const createHandImage = () => {
 
 export const getNextIndex = () => gameVariables.tutorialLetterIndex;
 
-export const nextLevelPrepare = (createBall, createBallNumber) => {
+const nextLevelPrepare = (createBall, createBallNumber) => {
   gameElements.groundImage.src = "assets/orange-pane.png";
   gameElements.correctAnswer.style.display = "none";
   gameElements.answerTitle.textContent = "";
@@ -181,7 +181,7 @@ export const nextLevelPrepare = (createBall, createBallNumber) => {
   createBall(createBallNumber);
 };
 
-export const removeAndClearBalls = (world, engine) => {
+const removeAndClearBalls = (world, engine) => {
   gameVariables.getLettersList = clearGetLettersList(
     gameVariables.destroyBalls,
     gameVariables.getLettersList,
@@ -202,12 +202,12 @@ export const removeAndClearBalls = (world, engine) => {
   }
 };
 
-export const hideBall = (ball, world, engine) => {
+const hideBall = (ball, world, engine) => {
   ball.render.visible = false;
   world.remove(engine.world, ball);
 };
 
-export const removeBallFromDestroyBalls = (ball) => {
+const removeBallFromDestroyBalls = (ball) => {
   const index = gameVariables.destroyBalls.indexOf(ball);
   if (index !== -1) {
     gameVariables.destroyBalls.splice(index, 1);
@@ -217,12 +217,12 @@ export const removeBallFromDestroyBalls = (ball) => {
   return -1;
 };
 
-export const hiddenAnswerTitle = () =>
+const hiddenAnswerTitle = () =>
   setTimeout(() => {
     gameElements.answerPart.className = "make-visible-answer-part";
   }, 500);
 
-export const removeLetterFromList = (letter, whichObject) => {
+const removeLetterFromList = (letter, whichObject) => {
   whichObject.removeChild(letter);
 };
 
@@ -265,13 +265,13 @@ export const showClickTickTitle = (nextLetter) => {
   }
 };
 
-export const handleCorrectAnswer = () => {
+const handleCorrectAnswer = () => {
   gameElements.groundImage.src = "assets/green-pane.png";
   gameElements.wrongAnswer.style.display = "none";
   gameElements.correctAnswer.style.display = "block";
 };
 
-export const handleDefaultAnswer = () => {
+const handleDefaultAnswer = () => {
   if (gameElements.answerTitle.textContent.length === 0) {
     gameElements.groundImage.src = "assets/orange-pane.png";
     gameElements.wrongAnswer.style.display = "none";
