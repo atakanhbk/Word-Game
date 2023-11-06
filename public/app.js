@@ -38,14 +38,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const ground = createGround(Bodies);
   World.add(engine.world, ground);
 
-
-
   reduceBallShaking(engine, 50);
 
   spawnLetterList();
 
   const createBall = (ballNumber) => {
-    let counter = 0;
+    gameVariables.counterBall = 0;
     if (gameVariables.createBallInterval !== null) {
       clearInterval(gameVariables.createBallInterval);
     }
@@ -66,10 +64,10 @@ document.addEventListener("DOMContentLoaded", function () {
       gameVariables.getLetterIndex++;
       gameVariables.balls.push(ball);
       World.add(engine.world, ball);
-      counter++;
+      gameVariables.counterBall++;
       getLetters(ball);
 
-      if (counter >= ballNumber) {
+      if (gameVariables.counterBall >= ballNumber) {
         createHandTutorial("W");
         clearInterval(gameVariables.createBallInterval);
       }

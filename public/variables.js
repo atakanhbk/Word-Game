@@ -18,6 +18,7 @@ class GameVariables {
   isTutorialEnd = false;
   getLetterIndex = 0;
   tutorialLetterIndex = 0;
+  counterBall = 0;
   createBallInterval = null;
   canClick = false;
   correctWordList = ["WORK","SAVE","LUNA","SON"];
