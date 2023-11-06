@@ -1,14 +1,17 @@
-import { balls , gameElements , randomLetterList , spawnLetterList } from "./variables.js";
+import {
+  balls,
+  gameElements,
+  randomLetterList,
+  spawnLetterList,
+  destroyBalls,
+  equalDestroyBallsToBalls
+} from "./variables.js";
 
 document.addEventListener("DOMContentLoaded", function () {
-  
   const { Engine, Render, Runner, Bodies, World, Bounds } = Matter;
-
 
   let isTutorialEnd = false;
 
-  
-  console.log(gameElements.gameContainer);
   const engine = Engine.create();
   const render = Render.create({
     element: gameElements.gameContainer,
@@ -32,11 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const ground = createGround();
   World.add(engine.world, ground);
-  let destroyBalls = [];
-  let getLetterIndex = 0;
-  
 
- 
+  let getLetterIndex = 0;
 
   const reduceBallShaking = () => (engine.velocityIterations = 50);
 
@@ -192,7 +192,8 @@ document.addEventListener("DOMContentLoaded", function () {
     gameElements.groundImage.src = "assets/orange-pane.png";
     gameElements.correctAnswer.style.display = "none";
     gameElements.answerTitle.textContent = "";
-    destroyBalls = [];
+    destroyBalls.splice(0, destroyBalls.length);
+
     createBall(6);
   };
 
@@ -214,7 +215,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let canClick = false;
 
   const clickBall = () => {
-   
     if (canClick) {
       const mousePosition = {
         x: event.clientX - canvas.getBoundingClientRect().left,
@@ -333,7 +333,7 @@ document.addEventListener("DOMContentLoaded", function () {
     gameElements.groundImage.src = "assets/orange-pane.png";
     gameElements.wrongAnswer.style.display = "none";
     gameElements.correctAnswer.style.display = "none";
-    destroyBalls = balls;
+    equalDestroyBallsToBalls();
     balls.forEach((element) => {
       element.isStatic = true;
     });
@@ -455,7 +455,7 @@ document.addEventListener("DOMContentLoaded", function () {
       changeColorOfLetter(ball, "#c66f4f");
       ball.render.sprite.texture = "assets/new-bubble-white.png";
     });
-    destroyBalls = [];
+    destroyBalls.splice(0, destroyBalls.length);
   };
   canvas.addEventListener("click", clickBall);
   engine.world.gravity.y = 1;

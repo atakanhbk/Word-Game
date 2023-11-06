@@ -1,4 +1,10 @@
 export let balls = [];
+export let destroyBalls = [];
+
+
+export const equalDestroyBallsToBalls = () => {
+    destroyBalls = balls;
+}
 
  class GameElements {
      constructor() {
