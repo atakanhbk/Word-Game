@@ -1,12 +1,18 @@
+import { gameElements, gameVariables } from "./variables.js";
 
+export const endTutorial = () => {
+  gameVariables.isTutorialEnd = true;
+  gameVariables.canClick = true;
+  gameElements.tutorialTitle.style.display = "none";
+};
 
-export const hiddenAnswerTitle = (hiddenObject) =>
+export const hiddenAnswerTitle = () =>
   setTimeout(() => {
-    hiddenObject.className = "make-visible-answer-part";
+    gameElements.answerPart.className = "make-visible-answer-part";
   }, 500);
 
-export const removeLetterFromList = (letter, whichObje) => {
-  whichObje.removeChild(letter);
+export const removeLetterFromList = (letter, whichObject) => {
+    whichObject.removeChild(letter);
 };
 
 export const changeColorOfBall = (ball, texture) =>
@@ -24,45 +30,43 @@ export const reduceBallShaking = (engine, value) => {
   engine.velocityIterations = value;
 };
 
-export const createGround = (Bodies) =>
-  Bodies.rectangle(250, 340, 500, 80, {
+export const createGround = (bodies) =>
+  bodies.rectangle(250, 340, 500, 80, {
     isStatic: true,
     render: { fillStyle: "#F19648" },
   });
 
-export const createWall = (Bodies, World, engine) => {
-  const leftWall = Bodies.rectangle(-9, 200, 20, 450, {
+export const createWall = (bodies, world, engine) => {
+  const leftWall = bodies.rectangle(-9, 200, 20, 450, {
     isStatic: true,
   });
-  const rightWall = Bodies.rectangle(509, 200, 20, 400, {
+  const rightWall = bodies.rectangle(509, 200, 20, 400, {
     isStatic: true,
   });
-  World.add(engine.world, [leftWall, rightWall]);
+  world.add(engine.world, [leftWall, rightWall]);
 };
 
-export function ShowClickTickTitle(nextLetter, tutorialTitle) {
+export const showClickTickTitle = (nextLetter) => {
   if (nextLetter === "") {
-    tutorialTitle.style.right = "-800px";
-    tutorialTitle.style.transform = "translate(-890px)";
-    tutorialTitle.textContent = "TAP THE GREEN BOX TO CONFIRM";
+    gameElements.tutorialTitle.style.right = "-800px";
+    gameElements.tutorialTitle.style.transform = "translate(-890px)";
+    gameElements.tutorialTitle.textContent = "TAP THE GREEN BOX TO CONFIRM";
   }
-}
+};
 
-export const handleCorrectAnswer = (gameElements) => {
+export const handleCorrectAnswer = () => {
   gameElements.groundImage.src = "assets/green-pane.png";
   gameElements.wrongAnswer.style.display = "none";
   gameElements.correctAnswer.style.display = "block";
 };
 
-export const handleDefaultAnswer = (gameElements) => {
+export const handleDefaultAnswer = () => {
   if (gameElements.answerTitle.textContent.length === 0) {
     gameElements.groundImage.src = "assets/orange-pane.png";
     gameElements.wrongAnswer.style.display = "none";
     gameElements.correctAnswer.style.display = "none";
   }
 };
-
-// utilities.js
 
 export const clearGetLettersList = (
   destroyBalls,
@@ -74,11 +78,12 @@ export const clearGetLettersList = (
   const updatedGetLettersList = getLettersList.filter((element) => {
     if (destroyBallLabels.includes(element.innerHTML)) {
       gameElements.gameContainer.removeChild(element);
-      return false; // Remove the element from the list
+      
+      return false;
     }
-    return true; // Keep the element in the list
+
+    return true; 
   });
 
-  return updatedGetLettersList; // Return the updated array
+  return updatedGetLettersList; 
 };
-
