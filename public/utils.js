@@ -43,7 +43,103 @@ export const spawnLetterList = () => {
   ];
 
   // Assign the values to the global variable
-  gameVariables.randomLetterList.push(...firstPart, ...secondPart, ...thirdPart);
+  gameVariables.randomLetterList.push(
+    ...firstPart,
+    ...secondPart,
+    ...thirdPart
+  );
+};
+
+export const addBallToDestroyBalls = (ball) => {
+  gameVariables.destroyBalls.push(ball);
+
+  return gameVariables.destroyBalls.length - 1;
+};
+
+export const handleNextLevelClick = (callCreateBallFunction, world, engine) => {
+  if (!gameVariables.isTutorialEnd) {
+    endTutorial();
+  }
+
+  if (!gameVariables.gameFinish) {
+    removeAndClearBalls(world, engine);
+    nextLevelPrepare(callCreateBallFunction, 6);
+  }
+};
+
+export const clickCancelButton = () => {
+  gameElements.groundImage.src = "assets/orange-pane.png";
+  gameElements.wrongAnswer.style.display = "none";
+  gameElements.correctAnswer.style.display = "none";
+  gameElements.answerTitle.textContent = "";
+
+  gameVariables.destroyBalls.forEach((ball) => {
+    changeColorOfLetter(ball, "#c66f4f", gameVariables.getLettersList);
+    ball.render.sprite.texture = "assets/new-bubble-white.png";
+  });
+  gameVariables.destroyBalls.splice(0, gameVariables.destroyBalls.length);
+};
+
+export const checkElementHasAlreadyInclude = (ball) => {
+  const index = removeBallFromDestroyBalls(ball);
+
+  if (gameVariables.isTutorialEnd && index !== -1) {
+    changeColorOfLetter(ball, "#c66f4f", gameVariables.getLettersList);
+    changeColorOfBall(ball, "assets/new-bubble-white.png");
+    gameElements.answerTitle.textContent =
+      gameElements.answerTitle.textContent.slice(0, index) +
+      gameElements.answerTitle.textContent.slice(index + 1);
+  } else if (gameElements.answerTitle.textContent.length < 4) {
+    addBallToDestroyBalls(ball);
+    changeColorOfLetter(ball, "white", gameVariables.getLettersList);
+    gameElements.answerTitle.textContent += ball.label;
+    changeColorOfBall(ball, "assets/newCircle.png");
+  }
+};
+
+export const nextLevelPrepare = (createBall, createBallNumber) => {
+  gameElements.groundImage.src = "assets/orange-pane.png";
+  gameElements.correctAnswer.style.display = "none";
+  gameElements.answerTitle.textContent = "";
+  gameVariables.destroyBalls.splice(0, gameVariables.destroyBalls.length);
+
+  createBall(createBallNumber);
+};
+
+export const removeAndClearBalls = (world, engine) => {
+  gameVariables.getLettersList = clearGetLettersList(
+    gameVariables.destroyBalls,
+    gameVariables.getLettersList,
+    gameElements
+  );
+  for (const destroyBall of gameVariables.destroyBalls) {
+    if (destroyBall?.parent) {
+      destroyBall.parent.isSensor = true;
+    }
+
+    destroyBall.render.visible = false;
+    world.remove(engine.world, destroyBall);
+    const indexInBalls = gameVariables.balls.indexOf(destroyBall);
+
+    if (indexInBalls !== -1) {
+      gameVariables.balls.splice(indexInBalls, 1);
+    }
+  }
+};
+
+export const hideBall = (ball, world, engine) => {
+  ball.render.visible = false;
+  world.remove(engine.world, ball);
+};
+
+export const removeBallFromDestroyBalls = (ball) => {
+  const index = gameVariables.destroyBalls.indexOf(ball);
+  if (index !== -1) {
+    gameVariables.destroyBalls.splice(index, 1);
+
+    return index;
+  }
+  return -1;
 };
 
 export const hiddenAnswerTitle = () =>
@@ -52,7 +148,7 @@ export const hiddenAnswerTitle = () =>
   }, 500);
 
 export const removeLetterFromList = (letter, whichObject) => {
-    whichObject.removeChild(letter);
+  whichObject.removeChild(letter);
 };
 
 export const changeColorOfBall = (ball, texture) =>
@@ -118,12 +214,12 @@ export const clearGetLettersList = (
   const updatedGetLettersList = getLettersList.filter((element) => {
     if (destroyBallLabels.includes(element.innerHTML)) {
       gameElements.gameContainer.removeChild(element);
-      
+
       return false;
     }
 
-    return true; 
+    return true;
   });
 
-  return updatedGetLettersList; 
+  return updatedGetLettersList;
 };

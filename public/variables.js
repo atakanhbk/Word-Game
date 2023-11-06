@@ -1,4 +1,3 @@
-
 class GameElements {
   constructor() {
     this.gameContainer = document.querySelector(".game-container");
@@ -21,7 +20,7 @@ class GameVariables {
   counterBall = 0;
   createBallInterval = null;
   canClick = false;
-  correctWordList = ["WORK","SAVE","LUNA","SON"];
+  correctWordList = ["WORK", "SAVE", "LUNA", "SON"];
   balls = [];
   destroyBalls = [];
   randomLetterList = [];
@@ -31,7 +30,3 @@ class GameVariables {
 export const gameVariables = new GameVariables();
 
 export const gameElements = new GameElements();
-
-
-
-

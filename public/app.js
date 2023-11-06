@@ -11,10 +11,13 @@ import {
   showClickTickTitle,
   handleCorrectAnswer,
   handleDefaultAnswer,
-  clearGetLettersList,
-  endTutorial,
   equalDestroyBallsToBalls,
   spawnLetterList,
+  removeBallFromDestroyBalls,
+  hideBall,
+  addBallToDestroyBalls,
+  handleNextLevelClick,
+  clickCancelButton
 } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -94,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const ball = gameVariables.balls.find(
           (element) => element.label === ballLabel
         );
-        changeColorOfLetter(ball, "white",  gameVariables.getLettersList);
+        changeColorOfLetter(ball, "white", gameVariables.getLettersList);
         changeColorOfBall(ball, "assets/newCircle.png");
 
         const handImage = document.createElement("img");
@@ -144,8 +147,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const startGame = () => createBall(13);
   startGame();
 
-
-
   const getLetters = (ball) => {
     const h1 = document.createElement("h1");
     h1.textContent = ball.label;
@@ -174,14 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
     rerender();
   };
 
-  const nextLevelPrepare = () => {
-    gameElements.groundImage.src = "assets/orange-pane.png";
-    gameElements.correctAnswer.style.display = "none";
-    gameElements.answerTitle.textContent = "";
-    gameVariables.destroyBalls.splice(0, gameVariables.destroyBalls.length);
-
-    createBall(6);
-  };
+ 
 
   createWall(Bodies, World, engine);
 
@@ -247,11 +241,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const getNextIndex = () => gameVariables.tutorialLetterIndex;
 
-  const hideBall = (ball) => {
-    ball.render.visible = false;
-    World.remove(engine.world, ball);
-  };
-
   const noLeftBallAndFinishGame = () => {
     if (gameVariables.destroyBalls.length > 0) {
       continueToDestroyBalls();
@@ -262,9 +251,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const continueToDestroyBalls = () => {
     const ballToDestroy = gameVariables.destroyBalls[0];
-    hideBall(ballToDestroy);
+    hideBall(ballToDestroy, World, engine);
 
-    const letterIndex =  gameVariables.getLettersList.findIndex(
+    const letterIndex = gameVariables.getLettersList.findIndex(
       (h1) => ballToDestroy.label == h1.textContent
     );
     if (letterIndex !== -1) {
@@ -295,67 +284,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 50);
   };
 
-  const removeAndClearBalls = () => {
-    gameVariables.getLettersList = clearGetLettersList(
-      gameVariables.destroyBalls,
-      gameVariables.getLettersList,
-      gameElements
-    );
-    for (const destroyBall of gameVariables.destroyBalls) {
-      if (destroyBall?.parent) {
-        destroyBall.parent.isSensor = true;
-      }
-
-      destroyBall.render.visible = false;
-      World.remove(engine.world, destroyBall);
-      const indexInBalls = gameVariables.balls.indexOf(destroyBall);
-
-      if (indexInBalls !== -1) {
-        gameVariables.balls.splice(indexInBalls, 1);
-      }
-    }
-  };
-
-  const handleNextLevelClick = () => {
-    if (!gameVariables.isTutorialEnd) {
-      endTutorial();
-    }
-
-    if (!gameVariables.gameFinish) {
-      removeAndClearBalls();
-      nextLevelPrepare();
-    }
-  };
-
-  const removeBallFromDestroyBalls = (ball) => {
-    const index = gameVariables.destroyBalls.indexOf(ball);
-    if (index !== -1) {
-      gameVariables.destroyBalls.splice(index, 1);
-
-      return index;
-    }
-
-    return -1;
-  };
-
-  const addBallToDestroyBalls = (ball) => {
-    gameVariables.destroyBalls.push(ball);
-
-    return gameVariables.destroyBalls.length - 1;
-  };
-
   const checkElementHasAlreadyInclude = (ball) => {
     const index = removeBallFromDestroyBalls(ball);
 
     if (gameVariables.isTutorialEnd && index !== -1) {
-      changeColorOfLetter(ball, "#c66f4f",  gameVariables.getLettersList);
+      changeColorOfLetter(ball, "#c66f4f", gameVariables.getLettersList);
       changeColorOfBall(ball, "assets/new-bubble-white.png");
       gameElements.answerTitle.textContent =
         gameElements.answerTitle.textContent.slice(0, index) +
         gameElements.answerTitle.textContent.slice(index + 1);
     } else if (gameElements.answerTitle.textContent.length < 4) {
       addBallToDestroyBalls(ball);
-      changeColorOfLetter(ball, "white",  gameVariables.getLettersList);
+      changeColorOfLetter(ball, "white", gameVariables.getLettersList);
       gameElements.answerTitle.textContent += ball.label;
       changeColorOfBall(ball, "assets/newCircle.png");
     }
@@ -367,9 +307,8 @@ document.addEventListener("DOMContentLoaded", function () {
       case gameVariables.correctWordList[1]:
       case gameVariables.correctWordList[2]:
         handleCorrectAnswer();
-        gameElements.nextLevelButton.addEventListener(
-          "click",
-          handleNextLevelClick
+        gameElements.nextLevelButton.addEventListener("click", () =>
+          handleNextLevelClick(createBall, World, engine)
         );
         break;
       case gameVariables.correctWordList[3]:
@@ -385,18 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  const clickCancelButton = () => {
-    gameElements.groundImage.src = "assets/orange-pane.png";
-    gameElements.wrongAnswer.style.display = "none";
-    gameElements.correctAnswer.style.display = "none";
-    gameElements.answerTitle.textContent = "";
 
-    gameVariables.destroyBalls.forEach((ball) => {
-      changeColorOfLetter(ball, "#c66f4f",  gameVariables.getLettersList);
-      ball.render.sprite.texture = "assets/new-bubble-white.png";
-    });
-    gameVariables.destroyBalls.splice(0, gameVariables.destroyBalls.length);
-  };
   canvas.addEventListener("click", clickBall);
   engine.world.gravity.y = 1;
 });
