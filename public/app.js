@@ -1,6 +1,7 @@
 import {
   balls,
   gameElements,
+  gameVariables,
   randomLetterList,
   spawnLetterList,
   destroyBalls,
@@ -18,16 +19,12 @@ import {
   ShowClickTickTitle,
   handleCorrectAnswer,
   handleDefaultAnswer,
-  clearGetLettersList
+  clearGetLettersList,
 } from "./utilities.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
-
   const { Engine, Render, Runner, Bodies, World, Bounds } = Matter;
-
-  let isTutorialEnd = false;
-
   
   const engine = Engine.create();
   const render = Render.create({
@@ -47,22 +44,22 @@ document.addEventListener("DOMContentLoaded", function () {
   const ground = createGround(Bodies);
   World.add(engine.world, ground);
 
-  let getLetterIndex = 0;
+  gameVariables.getLetterIndex = 0;
 
   reduceBallShaking(engine, 50);
 
   spawnLetterList();
 
-  let createBallInterval = null;
+
 
   const createBall = (ballNumber) => {
     let counter = 0;
-    if (createBallInterval !== null) {
-      clearInterval(createBallInterval);
+    if (gameVariables.createBallInterval !== null) {
+      clearInterval(gameVariables.createBallInterval);
     }
-    createBallInterval = setInterval(() => {
+    gameVariables.createBallInterval = setInterval(() => {
       const ball = Bodies.circle(250, 12, 33, {
-        label: randomLetterList[getLetterIndex],
+        label: randomLetterList[gameVariables.getLetterIndex],
         render: {
           fillStyle: "#C96336",
           text: { content: "A", color: "black", size: 150 },
@@ -74,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       });
 
-      getLetterIndex++;
+      gameVariables.getLetterIndex++;
       balls.push(ball);
       World.add(engine.world, ball);
       counter++;
@@ -82,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (counter >= ballNumber) {
         createHandTutorial("W");
-        clearInterval(createBallInterval);
+        clearInterval(gameVariables.createBallInterval);
       }
     }, 300);
   };
@@ -100,9 +97,9 @@ document.addEventListener("DOMContentLoaded", function () {
       gameElements.gameContainer.removeChild(handImage);
     }
 
-    if (ballLabel !== "" && !isTutorialEnd) {
+    if (ballLabel !== "" && !gameVariables.isTutorialEnd) {
       setTimeout(() => {
-        canClick = true;
+        gameVariables.canClick = true;
         gameElements.tutorialTitle.style.display = "block";
         const ball = balls.find((element) => element.label === ballLabel);
         changeColorOfLetter(ball, "white", getLettersList);
@@ -198,25 +195,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   Engine.run(engine);
 
-  let gameFinish = false;
-  let tutorialLetterIndex = 0;
-  let canClick = false;
+  gameVariables.tutorialLetterIndex = 0;
+  
 
   const clickBall = () => {
-    if (canClick) {
+    if ( gameVariables.canClick) {
       const mousePosition = {
         x: event.clientX - canvas.getBoundingClientRect().left,
         y: event.clientY - canvas.getBoundingClientRect().top,
       };
-      function clearAllGetLettersList() {
-        getLettersList.forEach((h1) => {
-          gameElements.gameContainer.removeChild(h1);
-        });
-        getLettersList = [];
-      }
+
       balls.forEach((ball, index) => {
         if (Bounds.contains(ball.bounds, mousePosition)) {
-          if (!isTutorialEnd) {
+          if (!gameVariables.isTutorialEnd) {
             tutorialModeClick(ball);
           } else {
             unTutorialModeClick(ball);
@@ -227,13 +218,13 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const tutorialModeClick = (ball) => {
-    if (ball.label === "W" && tutorialLetterIndex === 0) {
+    if (ball.label === "W" && gameVariables.tutorialLetterIndex === 0) {
       handleTutorialStep("O", ball);
-    } else if (ball.label === "O" && tutorialLetterIndex === 1) {
+    } else if (ball.label === "O" && gameVariables.tutorialLetterIndex === 1) {
       handleTutorialStep("R", ball);
-    } else if (ball.label === "R" && tutorialLetterIndex === 2) {
+    } else if (ball.label === "R" && gameVariables.tutorialLetterIndex === 2) {
       handleTutorialStep("K", ball);
-    } else if (ball.label === "K" && tutorialLetterIndex === 3) {
+    } else if (ball.label === "K" && gameVariables.tutorialLetterIndex === 3) {
       handleTutorialStep("", ball);
     }
   };
@@ -242,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function () {
     gameElements.wrongAnswer.style.display = "block";
     gameElements.correctAnswer.style.display = "none";
     gameElements.groundImage.src = "assets/gray-pane.png";
-    tutorialLetterIndex++;
+    gameVariables.tutorialLetterIndex++;
     checkElementHasAlreadyInclude(ball);
     checkWordIsCorrect();
     createHandTutorial("O");
@@ -250,23 +241,23 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const handleTutorialStep = (nextLetter, ball) => {
-    if (tutorialLetterIndex === getNextIndex()) {
+    if (gameVariables.tutorialLetterIndex === getNextIndex()) {
       gameElements.tutorialTitle.style.transform = "translate(-450px)";
       gameElements.wrongAnswer.style.display = "block";
       gameElements.correctAnswer.style.display = "none";
       gameElements.groundImage.src = "assets/gray-pane.png";
-      tutorialLetterIndex++;
+      gameVariables.tutorialLetterIndex++;
       checkElementHasAlreadyInclude(ball);
       checkWordIsCorrect();
       createHandTutorial(nextLetter);
-      canClick = false;
+      gameVariables.canClick = false;
     }
 
     ShowClickTickTitle(nextLetter, gameElements.tutorialTitle);
   };
 
   const getNextIndex = () => {
-    return tutorialLetterIndex;
+    return gameVariables.tutorialLetterIndex;
   };
 
   const hideBall = (ball) => {
@@ -300,29 +291,35 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const gameFinishFunction = () => {
+    //User Cant Choose Ball While They Are Destroying
+    gameVariables.canClick = false;
     gameElements.answerTitle.textContent = "";
     gameElements.groundImage.src = "assets/orange-pane.png";
     gameElements.wrongAnswer.style.display = "none";
     gameElements.correctAnswer.style.display = "none";
+    //Destroy All Balls
     equalDestroyBallsToBalls();
     balls.forEach((element) => {
       element.isStatic = true;
     });
-    let elementIndex = 0;
+
     setInterval(() => {
       noLeftBallAndFinishGame();
     }, 50);
   };
 
   const endTutorial = () => {
-    isTutorialEnd = true;
-    canClick = true;
+    gameVariables.isTutorialEnd = true;
+    gameVariables.canClick = true;
     gameElements.tutorialTitle.style.display = "none";
-    console.log(isTutorialEnd);
   };
 
   const removeAndClearBalls = () => {
-    getLettersList = clearGetLettersList(destroyBalls, getLettersList, gameElements);
+    getLettersList = clearGetLettersList(
+      destroyBalls,
+      getLettersList,
+      gameElements
+    );
     for (const destroyBall of destroyBalls) {
       if (destroyBall?.parent) {
         destroyBall.parent.isSensor = true;
@@ -337,11 +334,11 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const handleNextLevelClick = () => {
-    if (!isTutorialEnd) {
+    if (!gameVariables.isTutorialEnd) {
       endTutorial();
     }
 
-    if (!gameFinish) {
+    if (!gameVariables.gameFinish) {
       removeAndClearBalls();
       nextLevelPrepare();
     }
@@ -364,7 +361,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const checkElementHasAlreadyInclude = (ball) => {
     const index = removeBallFromDestroyBalls(ball);
 
-    if (isTutorialEnd && index !== -1) {
+    if (gameVariables.isTutorialEnd && index !== -1) {
       changeColorOfLetter(ball, "#c66f4f", getLettersList);
       changeColorOfBall(ball, "assets/new-bubble-white.png");
       gameElements.answerTitle.textContent =
@@ -391,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
         break;
       case "SON":
         handleCorrectAnswer(gameElements);
-        gameFinish = true;
+        gameVariables.gameFinish = true;
         gameElements.nextLevelButton.addEventListener(
           "click",
           gameFinishFunction

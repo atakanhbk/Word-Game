@@ -1,3 +1,5 @@
+
+
 export const hiddenAnswerTitle = (hiddenObject) =>
   setTimeout(() => {
     hiddenObject.className = "make-visible-answer-part";
