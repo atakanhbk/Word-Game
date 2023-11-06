@@ -1,23 +1,13 @@
+import { balls , gameElements , randomLetterList , spawnLetterList } from "./variables.js";
+
 document.addEventListener("DOMContentLoaded", function () {
+  
   const { Engine, Render, Runner, Bodies, World, Bounds } = Matter;
 
-  class GameElements {
-    constructor() {
-      this.gameContainer = document.querySelector(".game-container");
-      this.answerPart = document.querySelector(".answer-part");
-      this.answerTitle = document.querySelector(".answer-title");
-      this.wrongAnswer = document.querySelector(".wrong-answer");
-      this.correctAnswer = document.querySelector(".correct-answer");
-      this.cancelButton = document.querySelector(".cancel-button");
-      this.groundImage = document.querySelector(".ground-image");
-      this.nextLevelButton = document.querySelector(".next-level-button");
-      this.tutorialTitle = document.querySelector(".tutorial-title");
-    }
-  }
 
   let isTutorialEnd = false;
 
-  const gameElements = new GameElements();
+  
   console.log(gameElements.gameContainer);
   const engine = Engine.create();
   const render = Render.create({
@@ -42,52 +32,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const ground = createGround();
   World.add(engine.world, ground);
-  let balls = [];
   let destroyBalls = [];
   let getLetterIndex = 0;
-  const randomLetterList = [];
+  
 
-  const spawnLetterList = () => {
-    const firstPart = [
-      "W",
-      "B",
-      "O",
-      "S",
-      "R",
-      "F",
-      "G",
-      "H",
-      "J",
-      "Z",
-      "A",
-      "Y",
-      "K",
-    ];
-    const secondPart = ["V", "E", "L", "U", "P", "X"];
-    const thirdPart = [
-      "W",
-      "D",
-      "N",
-      "A",
-      "Q",
-      "R",
-      "A",
-      "N",
-      "Ğ",
-      "O",
-      "S",
-      "K",
-    ];
-
-    // Assign the values to the global variable
-    randomLetterList.push(...firstPart, ...secondPart, ...thirdPart);
-  };
+ 
 
   const reduceBallShaking = () => (engine.velocityIterations = 50);
 
   reduceBallShaking();
 
   spawnLetterList();
+
   let createBallInterval = null;
 
   const createBall = (ballNumber) => {
@@ -258,6 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let canClick = false;
 
   const clickBall = () => {
+   
     if (canClick) {
       const mousePosition = {
         x: event.clientX - canvas.getBoundingClientRect().left,
