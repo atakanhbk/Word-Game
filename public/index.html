@@ -604,7 +604,7 @@
         const removeAndClearBalls = () => {
           clearGetLettersList();
           for (const destroyBall of destroyBalls) {
-            if (destroyBall.parent !== undefined) {
+            if (destroyBall?.parent) {
               destroyBall.parent.isSensor = true;
             }
             destroyBall.render.visible = false;
