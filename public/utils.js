@@ -97,6 +97,49 @@ export const checkElementHasAlreadyInclude = (ball) => {
   }
 };
 
+export const continueToDestroyBalls = (world, engine) => {
+  const ballToDestroy = gameVariables.destroyBalls[0];
+  hideBall(ballToDestroy, world, engine);
+
+  const letterIndex = gameVariables.getLettersList.findIndex(
+    (h1) => ballToDestroy.label == h1.textContent
+  );
+  if (letterIndex !== -1) {
+    removeLetterFromList(
+      gameVariables.getLettersList[letterIndex],
+      gameElements.gameContainer
+    );
+  }
+
+  gameVariables.destroyBalls.splice(0, 1);
+};
+
+export const noLeftBallAndFinishGame = (world, engine) => {
+  if (gameVariables.destroyBalls.length > 0) {
+    continueToDestroyBalls(world, engine);
+  } else {
+    hiddenAnswerTitle();
+  }
+};
+
+export const gameFinishFunction = (world,engine) => {
+  //User Cant Choose Ball While They Are Destroying
+  gameVariables.canClick = false;
+  gameElements.answerTitle.textContent = "";
+  gameElements.groundImage.src = "assets/orange-pane.png";
+  gameElements.wrongAnswer.style.display = "none";
+  gameElements.correctAnswer.style.display = "none";
+  //Destroy All Balls
+  equalDestroyBallsToBalls();
+  gameVariables.balls.forEach((element) => {
+    element.isStatic = true;
+  });
+
+  setInterval(() => {
+    noLeftBallAndFinishGame(world, engine);
+  }, 50);
+};
+
 export const nextLevelPrepare = (createBall, createBallNumber) => {
   gameElements.groundImage.src = "assets/orange-pane.png";
   gameElements.correctAnswer.style.display = "none";

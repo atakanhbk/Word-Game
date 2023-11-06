@@ -17,7 +17,11 @@ import {
   hideBall,
   addBallToDestroyBalls,
   handleNextLevelClick,
-  clickCancelButton
+  clickCancelButton,
+  checkElementHasAlreadyInclude,
+  continueToDestroyBalls,
+  noLeftBallAndFinishGame,
+  gameFinishFunction
 } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -175,8 +179,6 @@ document.addEventListener("DOMContentLoaded", function () {
     rerender();
   };
 
- 
-
   createWall(Bodies, World, engine);
 
   Engine.run(engine);
@@ -241,65 +243,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const getNextIndex = () => gameVariables.tutorialLetterIndex;
 
-  const noLeftBallAndFinishGame = () => {
-    if (gameVariables.destroyBalls.length > 0) {
-      continueToDestroyBalls();
-    } else {
-      hiddenAnswerTitle();
-    }
-  };
-
-  const continueToDestroyBalls = () => {
-    const ballToDestroy = gameVariables.destroyBalls[0];
-    hideBall(ballToDestroy, World, engine);
-
-    const letterIndex = gameVariables.getLettersList.findIndex(
-      (h1) => ballToDestroy.label == h1.textContent
-    );
-    if (letterIndex !== -1) {
-      removeLetterFromList(
-        gameVariables.getLettersList[letterIndex],
-        gameElements.gameContainer
-      );
-    }
-
-    gameVariables.destroyBalls.splice(0, 1);
-  };
-
-  const gameFinishFunction = () => {
-    //User Cant Choose Ball While They Are Destroying
-    gameVariables.canClick = false;
-    gameElements.answerTitle.textContent = "";
-    gameElements.groundImage.src = "assets/orange-pane.png";
-    gameElements.wrongAnswer.style.display = "none";
-    gameElements.correctAnswer.style.display = "none";
-    //Destroy All Balls
-    equalDestroyBallsToBalls();
-    gameVariables.balls.forEach((element) => {
-      element.isStatic = true;
-    });
-
-    setInterval(() => {
-      noLeftBallAndFinishGame();
-    }, 50);
-  };
-
-  const checkElementHasAlreadyInclude = (ball) => {
-    const index = removeBallFromDestroyBalls(ball);
-
-    if (gameVariables.isTutorialEnd && index !== -1) {
-      changeColorOfLetter(ball, "#c66f4f", gameVariables.getLettersList);
-      changeColorOfBall(ball, "assets/new-bubble-white.png");
-      gameElements.answerTitle.textContent =
-        gameElements.answerTitle.textContent.slice(0, index) +
-        gameElements.answerTitle.textContent.slice(index + 1);
-    } else if (gameElements.answerTitle.textContent.length < 4) {
-      addBallToDestroyBalls(ball);
-      changeColorOfLetter(ball, "white", gameVariables.getLettersList);
-      gameElements.answerTitle.textContent += ball.label;
-      changeColorOfBall(ball, "assets/newCircle.png");
-    }
-  };
+ 
 
   const checkWordIsCorrect = () => {
     switch (gameElements.answerTitle.textContent) {
@@ -315,15 +259,14 @@ document.addEventListener("DOMContentLoaded", function () {
         handleCorrectAnswer();
         gameVariables.gameFinish = true;
         gameElements.nextLevelButton.addEventListener(
-          "click",
-          gameFinishFunction
+          "click", () =>
+          gameFinishFunction(World,engine)
         );
         break;
       default:
         handleDefaultAnswer();
     }
   };
-
 
   canvas.addEventListener("click", clickBall);
   engine.world.gravity.y = 1;
