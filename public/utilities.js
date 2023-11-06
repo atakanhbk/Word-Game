@@ -60,3 +60,23 @@ export const handleDefaultAnswer = (gameElements) => {
   }
 };
 
+// utilities.js
+
+export const clearGetLettersList = (
+  destroyBalls,
+  getLettersList,
+  gameElements
+) => {
+  const destroyBallLabels = destroyBalls.map((ball) => ball.label);
+
+  const updatedGetLettersList = getLettersList.filter((element) => {
+    if (destroyBallLabels.includes(element.innerHTML)) {
+      gameElements.gameContainer.removeChild(element);
+      return false; // Remove the element from the list
+    }
+    return true; // Keep the element in the list
+  });
+
+  return updatedGetLettersList; // Return the updated array
+};
+

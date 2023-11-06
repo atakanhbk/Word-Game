@@ -17,13 +17,18 @@ import {
   createWall,
   ShowClickTickTitle,
   handleCorrectAnswer,
-  handleDefaultAnswer
+  handleDefaultAnswer,
+  clearGetLettersList
 } from "./utilities.js";
+
 document.addEventListener("DOMContentLoaded", function () {
+
+
   const { Engine, Render, Runner, Bodies, World, Bounds } = Matter;
 
   let isTutorialEnd = false;
 
+  
   const engine = Engine.create();
   const render = Render.create({
     element: gameElements.gameContainer,
@@ -180,18 +185,6 @@ document.addEventListener("DOMContentLoaded", function () {
     rerender();
   };
 
-  const clearGetLettersList = () => {
-    const destroyBallLabels = destroyBalls.map((ball) => ball.label);
-
-    getLettersList = getLettersList.filter((element) => {
-      if (destroyBallLabels.includes(element.innerHTML)) {
-        gameElements.gameContainer.removeChild(element);
-        return false; // Remove the element from the list
-      }
-      return true; // Keep the element in the list
-    });
-  };
-
   const nextLevelPrepare = () => {
     gameElements.groundImage.src = "assets/orange-pane.png";
     gameElements.correctAnswer.style.display = "none";
@@ -329,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const removeAndClearBalls = () => {
-    clearGetLettersList();
+    getLettersList = clearGetLettersList(destroyBalls, getLettersList, gameElements);
     for (const destroyBall of destroyBalls) {
       if (destroyBall?.parent) {
         destroyBall.parent.isSensor = true;
@@ -384,8 +377,6 @@ document.addEventListener("DOMContentLoaded", function () {
       changeColorOfBall(ball, "assets/newCircle.png");
     }
   };
-
-
 
   const checkWordIsCorrect = () => {
     switch (gameElements.answerTitle.textContent) {
